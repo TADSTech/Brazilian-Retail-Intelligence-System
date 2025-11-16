@@ -87,23 +87,54 @@ Optional extensions for future development:
 ## Repository Structure
 
 ```
-/etl_scripts        # Python scripts for ETL
-/db_schema          # ERD diagrams and SQL scripts
-/data               # Original + cleaned CSVs
-/dashboard          # Metabase config and visualizations
-/docs               # Project documentation and methodology
+/data               # CSV datasets from Brazilian E-commerce
+/docs               # Documentation
+  ├── dataset_setup.md    # Data download instructions
+  ├── etl_setup.md        # ETL pipeline setup
+  └── database_setup.md   # Database configuration
+/etl                # ETL pipeline components
+  ├── main.py             # Main ETL orchestration
+  ├── extract.py          # Data extraction functions
+  ├── transform/          # Data transformation modules
+  │   ├── customers.py
+  │   ├── geolocation.py
+  │   ├── orders.py
+  │   ├── order_items.py
+  │   ├── order_payments.py
+  │   ├── order_reviews.py
+  │   ├── products.py
+  │   └── sellers.py
+  └── utils.py            # Logging utilities
+/db_schema          # Database schema and manipulation
+  ├── create_schema.py    # SQLAlchemy models and schema creation
+  └── dbmanip.py          # Data loading functions
+/dashboard          # Metabase configurations (future)
+/env               # Environment variables (database config)
+/gitignore         # Git ignore rules
+/requirements.txt   # Python dependencies
 /README.md
 ```
 
 ---
 
-## Usage
+## Quick Start
 
-1. Clone the repository.
-2. Set up Docker environment with PostgreSQL and Metabase.
-3. Run ETL scripts to populate the database.
-4. Access Metabase dashboard locally or via cloud deployment.
-5. Analyze KPIs and generate business insights.
+1. **Setup Data**: Follow `docs/dataset_setup.md` to download and prepare the datasets
+2. **Configure Environment**: Follow `docs/etl_setup.md` for ETL pipeline setup
+3. **Run ETL**: Execute `python etl/main.py` to process and load all data
+4. **Access Database**: Query the PostgreSQL database for analysis
+
+---
+
+## ETL Pipeline Details
+
+The ETL pipeline processes 8 datasets with the following transformations:
+
+- **Extract**: Robust CSV reading with encoding detection
+- **Transform**: Data type conversions, state name mapping, category translation, datetime handling
+- **Load**: Bulk insertion into PostgreSQL using SQLAlchemy
+
+See `docs/etl_setup.md` for detailed setup instructions.
 
 ---
 

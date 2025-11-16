@@ -2,7 +2,12 @@ from extract import extract_data
 from transform.customers import transform_customers
 from transform.geolocation import transform_geolocation
 from transform.orders_items import transform_order_items
-# from load import load_data
+from transform.order_payments import transform_order_payments
+from transform.order_reviews import transform_order_reviews
+from transform.orders import transform_orders
+from transform.products import transform_products
+from transform.sellers import transform_sellers
+from load import load_all_data
 from utils import log_message, warning_message, error_message, success_message
 import os
 
@@ -55,18 +60,42 @@ def run_etl_process():
     try:
         transformed_customers = transform_customers(customer_dataset)
         success_message("Customer data transformed successfully.")
-        transformed_geolocation = transformed_geolocation(geolocation_dataset)
+        transformed_geolocation = transform_geolocation(geolocation_dataset)
         success_message("Geolocation data transformed successfully.")
         transformed_order_items = transform_order_items(order_items_dataset)
         success_message("Order items data transformed successfully.")
+        transformed_order_payments = transform_order_payments(order_payments_dataset)
+        success_message("Order payments data transformed successfully.")
+        transformed_order_reviews = transform_order_reviews(order_reviews_dataset)
+        success_message("Order reviews data transformed successfully.")
+        transformed_orders = transform_orders(orders_dataset)
+        success_message("Orders data transformed successfully.")
+        transformed_products = transform_products(products_dataset)
+        success_message("Products data transformed successfully.")
+        transformed_sellers = transform_sellers(sellers_dataset)
+        success_message("Sellers data transformed successfully.")
     except Exception as e:
         error_message(f"Data transformation failed: {e}")
         return
     log_message("Data transformation completed.")
     
-    # # Load
-    # load_data(transformed_data)
-    # log_message("Data loading completed.")
+    # Load
+    try:
+        transformed_data = {
+            'customers': transformed_customers,
+            'geolocation': transformed_geolocation,
+            'order_items': transformed_order_items,
+            'order_payments': transformed_order_payments,
+            'order_reviews': transformed_order_reviews,
+            'orders': transformed_orders,
+            'products': transformed_products,
+            'sellers': transformed_sellers
+        }
+        load_all_data(transformed_data)
+    except Exception as e:
+        error_message(f"Data loading failed: {e}")
+        return
+    log_message("Data loading completed.")
     
     success_message("ETL process finished successfully.")
 
