@@ -27,6 +27,27 @@ class Customer(Base):
     customer_state = Column(String)
     customer_state_initials = Column(String)
 
+class Geolocation(Base):
+    __tablename__ = 'geolocation'
+
+    geolocation_zip_code_prefix = Column(Integer, primary_key=True)
+    geolocation_lat = Column(Float)
+    geolocation_lng = Column(Float)
+    geolocation_city = Column(String)
+    geolocation_state = Column(String)
+    geolocation_state_initials = Column(String)
+
+class OrderItem(Base):
+    __tablename__ = 'order_items'
+
+    order_item_id = Column(Integer, primary_key=True, autoincrement=True)
+    order_id = Column(String, nullable=False)
+    product_id = Column(String, nullable=False)
+    seller_id = Column(String, nullable=False)
+    shipping_limit_date = Column(DateTime)
+    price = Column(Float)
+    freight_value = Column(Float)
+
 # Create all tables
 def create_database_schema():
     """Create all tables in the database."""
@@ -36,16 +57,6 @@ def create_database_schema():
     except Exception as e:
         print(f"Error creating database schema: {e}")
         print("Tables may already exist or there may be a database connection issue.")
-
-# Create customers table specifically
-def create_customers_table():
-    """Create the customers table."""
-    try:
-        Customer.__table__.create(engine)
-        print("Customers table created successfully.")
-    except Exception as e:
-        print(f"Error creating customers table: {e}")
-        print("Table may already exist or there may be a database connection issue.")
 
 if __name__ == "__main__":
     create_database_schema()
