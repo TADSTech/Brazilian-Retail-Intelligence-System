@@ -40,7 +40,7 @@ This will create all necessary tables in your PostgreSQL database.
 Execute the ETL process:
 
 ```bash
-python etl/main.py
+python -m etl/main.py
 ```
 
 This will:
