@@ -29,4 +29,8 @@ def transform_order_reviews(data: pd.DataFrame) -> pd.DataFrame:
     # Drop duplicate rows
     data = data.drop_duplicates()
 
+    # For duplicate review_ids, keep only the first occurrence per review_id
+    # This ensures we have a valid primary key (order_id) without duplicate review_ids
+    data = data.drop_duplicates(subset=['review_id'], keep='first')
+
     return data

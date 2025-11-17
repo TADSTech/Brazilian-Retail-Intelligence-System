@@ -20,8 +20,8 @@ Base = declarative_base()
 class Customer(Base):
     __tablename__ = 'customers'
 
-    customer_id = Column(String, nullable=True)
-    customer_unique_id = Column(String, primary_key=True)
+    customer_id = Column(String, primary_key=True)
+    customer_unique_id = Column(String, nullable=True)
     customer_zip_code_prefix = Column(String)
     customer_city = Column(String)
     customer_state = Column(String)
@@ -30,7 +30,8 @@ class Customer(Base):
 class Geolocation(Base):
     __tablename__ = 'geolocation'
 
-    geolocation_zip_code_prefix = Column(Integer, primary_key=True)
+    geolocation_id = Column(Integer, primary_key=True, autoincrement=True)
+    geolocation_zip_code_prefix = Column(Integer)
     geolocation_lat = Column(Float)
     geolocation_lng = Column(Float)
     geolocation_city = Column(String)
@@ -40,8 +41,8 @@ class Geolocation(Base):
 class OrderItem(Base):
     __tablename__ = 'order_items'
 
-    order_item_id = Column(Integer, primary_key=True, autoincrement=True)
-    order_id = Column(String, nullable=False)
+    order_id = Column(String, primary_key=True)
+    order_item_id = Column(Integer, primary_key=True)
     product_id = Column(String, nullable=False)
     seller_id = Column(String, nullable=False)
     shipping_limit_date = Column(DateTime)
@@ -60,8 +61,8 @@ class OrderPayment(Base):
 class OrderReview(Base):
     __tablename__ = 'order_reviews'
 
-    review_id = Column(String, primary_key=True)
-    order_id = Column(String, nullable=False)
+    review_id = Column(String)
+    order_id = Column(String, primary_key=True)
     review_score = Column(Integer)
     review_comment_title = Column(Text)
     review_comment_message = Column(Text)

@@ -53,6 +53,48 @@ Each KPI includes business-oriented recommendations based on observed trends.
 
 ---
 
+## Dashboard Structure (Professional Layout)
+
+### Executive Overview
+Quick insights for non-technical stakeholders:
+- **Total Revenue** (card)
+- **AOV** (card)
+- **Total Orders** (card)
+- **Unique Customers** (card)
+
+### Sales & Revenue
+- **Revenue trend over time** (line chart: daily or monthly)
+- **Order volume trend** (bar chart)
+- **Category revenue contribution** (tree map or horizontal bars)
+
+### Customer Behavior
+- **Repeat purchase rate** (card)
+- **New vs returning customers over time** (area chart)
+- **Customer geographic distribution** (map using geolocation)
+
+### Product Performance
+- **Top-selling products** (bar chart)
+- **Top categories by order count** (bar chart)
+- **Sales concentration metric** (Pareto — 20% SKUs driving 80% revenue)
+
+### Logistics Efficiency
+- **Delivery lead time (average days)** (card)
+- **Lead time distribution** (histogram or boxplot)
+- **Estimated vs actual delivery** (line or scatter trend)
+- **Delayed delivery %** (card)
+
+### Payment Insights
+- **Payment method share** (pie or donut)
+- **Installment count distribution** (histogram)
+- **Payment value correlation to method** (table or clustered bar)
+
+### Customer Satisfaction
+- **Average review score** (card)
+- **Review distribution** (bar chart)
+- **Delivery delay vs review score correlation** (scatter)
+
+---
+
 ## Technical Stack
 
 * **Python** – Data cleaning and ETL scripting
@@ -108,6 +150,15 @@ Optional extensions for future development:
 /db_schema          # Database schema and manipulation
   ├── create_schema.py    # SQLAlchemy models and schema creation
   └── dbmanip.py          # Data loading functions
+/sql                # SQL queries for dashboard analytics
+  ├── executive_overview.sql    # High-level KPIs
+  ├── sales_revenue.sql         # Revenue and sales metrics
+  ├── customer_behavior.sql     # Customer analysis
+  ├── product_performance.sql   # Product analytics
+  ├── logistics_efficiency.sql  # Delivery performance
+  ├── payment_insights.sql      # Payment analysis
+  ├── customer_satisfaction.sql # Review metrics
+  └── README.md                 # SQL queries documentation
 /dashboard          # Metabase configurations (future)
 /env               # Environment variables (database config)
 /gitignore         # Git ignore rules

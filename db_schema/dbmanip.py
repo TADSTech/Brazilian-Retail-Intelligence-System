@@ -6,6 +6,7 @@ project_root = os.path.dirname(os.path.dirname(__file__))
 sys.path.insert(0, project_root)
 
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import text
 from .create_schema import engine, Customer, Geolocation, OrderItem, OrderPayment, OrderReview, Order, Product, Seller
 from etl.utils import log_message, error_message, success_message
 from .create_schema import check_schema_created
@@ -24,7 +25,7 @@ def load_customers(df, full_reload=False):
         
         if full_reload:
             # Truncate table for full reload
-            session.execute("TRUNCATE TABLE customers RESTART IDENTITY CASCADE;")
+            session.execute(text("TRUNCATE TABLE customers RESTART IDENTITY CASCADE;"))
             success_message("Customers table truncated for full reload.")
         
         records = df.to_dict('records')
@@ -47,7 +48,7 @@ def load_geolocation(df, full_reload=False):
         session = Session()
         
         if full_reload:
-            session.execute("TRUNCATE TABLE geolocation RESTART IDENTITY CASCADE;")
+            session.execute(text("TRUNCATE TABLE geolocation RESTART IDENTITY CASCADE;"))
             success_message("Geolocation table truncated for full reload.")
         
         records = df.to_dict('records')
@@ -70,7 +71,7 @@ def load_order_items(df, full_reload=False):
         session = Session()
         
         if full_reload:
-            session.execute("TRUNCATE TABLE order_items RESTART IDENTITY CASCADE;")
+            session.execute(text("TRUNCATE TABLE order_items RESTART IDENTITY CASCADE;"))
             success_message("Order items table truncated for full reload.")
         
         records = df.to_dict('records')
@@ -93,7 +94,7 @@ def load_order_payments(df, full_reload=False):
         session = Session()
         
         if full_reload:
-            session.execute("TRUNCATE TABLE order_payments RESTART IDENTITY CASCADE;")
+            session.execute(text("TRUNCATE TABLE order_payments RESTART IDENTITY CASCADE;"))
             success_message("Order payments table truncated for full reload.")
         
         records = df.to_dict('records')
@@ -116,7 +117,7 @@ def load_order_reviews(df, full_reload=False):
         session = Session()
         
         if full_reload:
-            session.execute("TRUNCATE TABLE order_reviews RESTART IDENTITY CASCADE;")
+            session.execute(text("TRUNCATE TABLE order_reviews RESTART IDENTITY CASCADE;"))
             success_message("Order reviews table truncated for full reload.")
         
         records = df.to_dict('records')
@@ -139,7 +140,7 @@ def load_orders(df, full_reload=False):
         session = Session()
         
         if full_reload:
-            session.execute("TRUNCATE TABLE orders RESTART IDENTITY CASCADE;")
+            session.execute(text("TRUNCATE TABLE orders RESTART IDENTITY CASCADE;"))
             success_message("Orders table truncated for full reload.")
         
         records = df.to_dict('records')
@@ -162,7 +163,7 @@ def load_products(df, full_reload=False):
         session = Session()
         
         if full_reload:
-            session.execute("TRUNCATE TABLE products RESTART IDENTITY CASCADE;")
+            session.execute(text("TRUNCATE TABLE products RESTART IDENTITY CASCADE;"))
             success_message("Products table truncated for full reload.")
         
         records = df.to_dict('records')
@@ -185,7 +186,7 @@ def load_sellers(df, full_reload=False):
         session = Session()
         
         if full_reload:
-            session.execute("TRUNCATE TABLE sellers RESTART IDENTITY CASCADE;")
+            session.execute(text("TRUNCATE TABLE sellers RESTART IDENTITY CASCADE;"))
             success_message("Sellers table truncated for full reload.")
         
         records = df.to_dict('records')
