@@ -14,8 +14,21 @@ import os
 # Root directory of the project
 root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-def run_etl_process():
+def run_etl_process(full_reload=False):
+    """
+    Run the complete ETL process.
+    
+    Args:
+        full_reload (bool): If True, truncate existing data before loading. 
+                           If False, skip if data already exists.
+    """
     log_message("ETL process started.")
+    
+    # Check if schema exists
+    from db_schema.create_schema import check_schema_created
+    if not check_schema_created():
+        error_message("Database schema not created. Please run 'python db_schema/create_schema.py' first.")
+        return
     
     # Extract
     try:
@@ -89,7 +102,8 @@ def run_etl_process():
             'order_reviews': transformed_order_reviews,
             'orders': transformed_orders,
             'products': transformed_products,
-            'sellers': transformed_sellers
+            'sellers': transformed_sellers,
+            'full_reload': full_reload
         }
         load_all_data(transformed_data)
     except Exception as e:
@@ -100,4 +114,6 @@ def run_etl_process():
     success_message("ETL process finished successfully.")
 
 if __name__ == "__main__":
-    run_etl_process()
+    import sys
+    full_reload = '--full-reload' in sys.argv
+    run_etl_process(full_reload=full_reload)

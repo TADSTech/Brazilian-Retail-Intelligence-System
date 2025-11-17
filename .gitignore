@@ -62,3 +62,6 @@ venv.bak/
 # OS
 .DS_Store
 Thumbs.db
+
+# Project specific
+.schema_created

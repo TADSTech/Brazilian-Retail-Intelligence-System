@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Database configuration
-DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://user:password@localhost/brazilretail_bi')
+DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://tads:TadsDB25@localhost:5432/brazilretail_bi')
 
 # Create engine
 engine = create_engine(DATABASE_URL, echo=True)
@@ -109,9 +109,31 @@ def create_database_schema():
     try:
         Base.metadata.create_all(engine)
         print("Database schema created successfully.")
+        
+        # Save flag file to indicate schema creation
+        flag_file = os.path.join(os.path.dirname(__file__), '..', '.schema_created')
+        with open(flag_file, 'w') as f:
+            f.write('true')
+        print("Schema creation flag saved.")
+        
     except Exception as e:
         print(f"Error creating database schema: {e}")
         print("Tables may already exist or there may be a database connection issue.")
+
+# Create customers table specifically
+def create_customers_table():
+    """Create the customers table."""
+    try:
+        Customer.__table__.create(engine)
+        print("Customers table created successfully.")
+    except Exception as e:
+        print(f"Error creating customers table: {e}")
+        print("Table may already exist or there may be a database connection issue.")
+
+def check_schema_created():
+    """Check if the database schema has been created."""
+    flag_file = os.path.join(os.path.dirname(__file__), '..', '.schema_created')
+    return os.path.exists(flag_file)
 
 if __name__ == "__main__":
     create_database_schema()

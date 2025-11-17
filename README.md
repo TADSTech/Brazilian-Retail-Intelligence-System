@@ -124,6 +124,14 @@ Optional extensions for future development:
 3. **Run ETL**: Execute `python etl/main.py` to process and load all data
 4. **Access Database**: Query the PostgreSQL database for analysis
 
+## System Documentation
+
+For comprehensive system documentation, see:
+- `docs/system_overview.md` - Complete system architecture and usage guide
+- `docs/database_setup.md` - Database configuration and schema details
+- `docs/etl_setup.md` - ETL pipeline setup and operation
+- `docs/dataset_setup.md` - Data acquisition instructions
+
 ---
 
 ## ETL Pipeline Details

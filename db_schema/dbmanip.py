@@ -1,14 +1,24 @@
 from sqlalchemy.orm import sessionmaker
-from create_schema import engine, Customer, Geolocation, OrderItem, OrderPayment, OrderReview, Order, Product, Seller
-from ..etl.utils import error_message, success_message
+from create_schema import engine, Customer, Geolocation, OrderItem, OrderPayment, OrderReview, Order, Product, Seller, check_schema_created
+from ..etl.utils import error_message, success_message, log_message
 
 # Create session
 Session = sessionmaker(bind=engine)
 
-def load_customers(df):
+def load_customers(df, full_reload=False):
     """Load customers data into the database."""
+    if not check_schema_created():
+        error_message("Database schema not created. Please run create_schema.py first.")
+        return
+    
     try:
         session = Session()
+        
+        if full_reload:
+            # Truncate table for full reload
+            session.execute("TRUNCATE TABLE customers RESTART IDENTITY CASCADE;")
+            success_message("Customers table truncated for full reload.")
+        
         records = df.to_dict('records')
         session.bulk_insert_mappings(Customer, records)
         session.commit()
@@ -19,10 +29,19 @@ def load_customers(df):
     finally:
         session.close()
 
-def load_geolocation(df):
+def load_geolocation(df, full_reload=False):
     """Load geolocation data into the database."""
+    if not check_schema_created():
+        error_message("Database schema not created. Please run create_schema.py first.")
+        return
+    
     try:
         session = Session()
+        
+        if full_reload:
+            session.execute("TRUNCATE TABLE geolocation RESTART IDENTITY CASCADE;")
+            success_message("Geolocation table truncated for full reload.")
+        
         records = df.to_dict('records')
         session.bulk_insert_mappings(Geolocation, records)
         session.commit()
@@ -33,10 +52,19 @@ def load_geolocation(df):
     finally:
         session.close()
 
-def load_order_items(df):
+def load_order_items(df, full_reload=False):
     """Load order items data into the database."""
+    if not check_schema_created():
+        error_message("Database schema not created. Please run create_schema.py first.")
+        return
+    
     try:
         session = Session()
+        
+        if full_reload:
+            session.execute("TRUNCATE TABLE order_items RESTART IDENTITY CASCADE;")
+            success_message("Order items table truncated for full reload.")
+        
         records = df.to_dict('records')
         session.bulk_insert_mappings(OrderItem, records)
         session.commit()
@@ -47,10 +75,19 @@ def load_order_items(df):
     finally:
         session.close()
 
-def load_order_payments(df):
+def load_order_payments(df, full_reload=False):
     """Load order payments data into the database."""
+    if not check_schema_created():
+        error_message("Database schema not created. Please run create_schema.py first.")
+        return
+    
     try:
         session = Session()
+        
+        if full_reload:
+            session.execute("TRUNCATE TABLE order_payments RESTART IDENTITY CASCADE;")
+            success_message("Order payments table truncated for full reload.")
+        
         records = df.to_dict('records')
         session.bulk_insert_mappings(OrderPayment, records)
         session.commit()
@@ -61,10 +98,19 @@ def load_order_payments(df):
     finally:
         session.close()
 
-def load_order_reviews(df):
+def load_order_reviews(df, full_reload=False):
     """Load order reviews data into the database."""
+    if not check_schema_created():
+        error_message("Database schema not created. Please run create_schema.py first.")
+        return
+    
     try:
         session = Session()
+        
+        if full_reload:
+            session.execute("TRUNCATE TABLE order_reviews RESTART IDENTITY CASCADE;")
+            success_message("Order reviews table truncated for full reload.")
+        
         records = df.to_dict('records')
         session.bulk_insert_mappings(OrderReview, records)
         session.commit()
@@ -75,10 +121,19 @@ def load_order_reviews(df):
     finally:
         session.close()
 
-def load_orders(df):
+def load_orders(df, full_reload=False):
     """Load orders data into the database."""
+    if not check_schema_created():
+        error_message("Database schema not created. Please run create_schema.py first.")
+        return
+    
     try:
         session = Session()
+        
+        if full_reload:
+            session.execute("TRUNCATE TABLE orders RESTART IDENTITY CASCADE;")
+            success_message("Orders table truncated for full reload.")
+        
         records = df.to_dict('records')
         session.bulk_insert_mappings(Order, records)
         session.commit()
@@ -89,10 +144,19 @@ def load_orders(df):
     finally:
         session.close()
 
-def load_products(df):
+def load_products(df, full_reload=False):
     """Load products data into the database."""
+    if not check_schema_created():
+        error_message("Database schema not created. Please run create_schema.py first.")
+        return
+    
     try:
         session = Session()
+        
+        if full_reload:
+            session.execute("TRUNCATE TABLE products RESTART IDENTITY CASCADE;")
+            success_message("Products table truncated for full reload.")
+        
         records = df.to_dict('records')
         session.bulk_insert_mappings(Product, records)
         session.commit()
@@ -103,10 +167,19 @@ def load_products(df):
     finally:
         session.close()
 
-def load_sellers(df):
+def load_sellers(df, full_reload=False):
     """Load sellers data into the database."""
+    if not check_schema_created():
+        error_message("Database schema not created. Please run create_schema.py first.")
+        return
+    
     try:
         session = Session()
+        
+        if full_reload:
+            session.execute("TRUNCATE TABLE sellers RESTART IDENTITY CASCADE;")
+            success_message("Sellers table truncated for full reload.")
+        
         records = df.to_dict('records')
         session.bulk_insert_mappings(Seller, records)
         session.commit()
