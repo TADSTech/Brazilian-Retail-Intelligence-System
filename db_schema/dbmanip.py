@@ -1,6 +1,14 @@
+import sys
+import os
+
+# Add project root to path for imports
+project_root = os.path.dirname(os.path.dirname(__file__))
+sys.path.insert(0, project_root)
+
 from sqlalchemy.orm import sessionmaker
-from create_schema import engine, Customer, Geolocation, OrderItem, OrderPayment, OrderReview, Order, Product, Seller, check_schema_created
-from ..etl.utils import error_message, success_message, log_message
+from .create_schema import engine, Customer, Geolocation, OrderItem, OrderPayment, OrderReview, Order, Product, Seller
+from etl.utils import log_message, error_message, success_message
+from .create_schema import check_schema_created
 
 # Create session
 Session = sessionmaker(bind=engine)

@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-from utils import error_message
+from .utils import error_message
 
 def extract_data(file_path: str) -> pd.DataFrame:
     """

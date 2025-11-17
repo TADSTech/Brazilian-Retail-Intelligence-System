@@ -1,4 +1,11 @@
-from ..db_schema.dbmanip import (
+import sys
+import os
+
+# Add project root to path for imports
+project_root = os.path.dirname(os.path.dirname(__file__))
+sys.path.insert(0, project_root)
+
+from db_schema.dbmanip import (
     load_customers, load_geolocation, load_order_items, load_order_payments,
     load_order_reviews, load_orders, load_products, load_sellers
 )

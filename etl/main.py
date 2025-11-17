@@ -1,15 +1,16 @@
-from extract import extract_data
-from transform.customers import transform_customers
-from transform.geolocation import transform_geolocation
-from transform.orders_items import transform_order_items
-from transform.order_payments import transform_order_payments
-from transform.order_reviews import transform_order_reviews
-from transform.orders import transform_orders
-from transform.products import transform_products
-from transform.sellers import transform_sellers
-from load import load_all_data
-from utils import log_message, warning_message, error_message, success_message
+from .extract import extract_data
+from .transform.customers import transform_customers
+from .transform.geolocation import transform_geolocation
+from .transform.orders_items import transform_order_items
+from .transform.order_payments import transform_order_payments
+from .transform.order_reviews import transform_order_reviews
+from .transform.orders import transform_orders
+from .transform.products import transform_products
+from .transform.sellers import transform_sellers
+from .load import load_all_data
+from .utils import log_message, warning_message, error_message, success_message
 import os
+import sys
 
 # Root directory of the project
 root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -114,6 +115,5 @@ def run_etl_process(full_reload=False):
     success_message("ETL process finished successfully.")
 
 if __name__ == "__main__":
-    import sys
     full_reload = '--full-reload' in sys.argv
     run_etl_process(full_reload=full_reload)
