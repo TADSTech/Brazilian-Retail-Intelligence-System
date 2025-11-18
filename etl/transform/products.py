@@ -1,6 +1,7 @@
 # Transform products script
 
 import pandas as pd
+import os
 
 def transform_products(data: pd.DataFrame) -> pd.DataFrame:
     """
@@ -24,13 +25,23 @@ def transform_products(data: pd.DataFrame) -> pd.DataFrame:
     data.product_width_cm = data.product_width_cm.astype('Int64')
 
     # Load product category translation
-    translation_path = '../data/product_category_name_translation.csv'
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(os.path.dirname(script_dir))
+    translation_path = os.path.join(project_root, 'data', 'product_category_name_translation.csv')
     try:
         translation_df = pd.read_csv(translation_path)
         translation_dict = dict(zip(translation_df['product_category_name'], translation_df['product_category_name_english']))
         
         # Map Portuguese categories to English
         data['product_category_name_english'] = data['product_category_name'].map(translation_dict)
+        
+        # Format English category names to be more presentable
+        def format_category_name(name):
+            if pd.isna(name) or not isinstance(name, str):
+                return name
+            return name.replace('_', ' ').title()
+        
+        data['product_category_name_english'] = data['product_category_name_english'].apply(format_category_name)
     except FileNotFoundError:
         print("Warning: Product category translation file not found. Skipping English translation.")
         data['product_category_name_english'] = data['product_category_name']
