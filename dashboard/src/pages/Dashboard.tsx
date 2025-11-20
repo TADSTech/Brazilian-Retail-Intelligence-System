@@ -20,6 +20,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
+import { useSearchParams } from 'react-router-dom'
 
 // Overview Chart Data
 const overviewData = [
@@ -37,7 +38,37 @@ const overviewData = [
   { name: 'Dec', total: Math.floor(Math.random() * 5000) + 1000 },
 ]
 
+const tabPages = {
+  overview: {
+    title: 'Overview',
+    description: 'Monitor your retail sales and key metrics',
+  },
+  analytics: {
+    title: 'Analytics',
+    description: 'Detailed traffic and visitor insights',
+  },
+  customers: {
+    title: 'Customers',
+    description: 'Customer data and analytics',
+  },
+  products: {
+    title: 'Products',
+    description: 'Product catalog and performance',
+  },
+  settings: {
+    title: 'Settings',
+    description: 'Dashboard and system settings',
+  },
+}
+
 export function Dashboard() {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const currentTab = (searchParams.get('tab') || 'overview') as keyof typeof tabPages
+  const currentPage = tabPages[currentTab] || tabPages.overview
+
+  const handleTabChange = (tab: string) => {
+    setSearchParams({ tab })
+  }
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -47,12 +78,12 @@ export function Dashboard() {
           <Separator orientation="vertical" className="mr-2 h-4" />
           <Breadcrumb>
             <BreadcrumbList>
-              <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="#" className="text-primary">BrazilBI</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
               <BreadcrumbItem>
-                <BreadcrumbPage>Dashboard</BreadcrumbPage>
+                <BreadcrumbLink href="/dashboard" className="text-primary font-semibold">Dashboard</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage className="font-medium">{currentPage.title}</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -61,24 +92,19 @@ export function Dashboard() {
         <div className="flex flex-1 flex-col gap-4 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-              <p className="text-muted-foreground">
-                Welcome to your Brazilian Retail Analytics platform
-              </p>
+              <h1 className="text-3xl font-bold tracking-tight">{currentPage.title}</h1>
+              <p className="text-muted-foreground">{currentPage.description}</p>
             </div>
             <Button>Download Report</Button>
           </div>
 
-          <Tabs defaultValue="overview" className="space-y-4">
+          <Tabs value={currentTab} onValueChange={handleTabChange} className="space-y-4">
             <TabsList>
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="analytics">Analytics</TabsTrigger>
-              <TabsTrigger value="reports" disabled>
-                Reports
-              </TabsTrigger>
-              <TabsTrigger value="notifications" disabled>
-                Notifications
-              </TabsTrigger>
+              <TabsTrigger value="customers">Customers</TabsTrigger>
+              <TabsTrigger value="products">Products</TabsTrigger>
+              <TabsTrigger value="settings">Settings</TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="space-y-4">
@@ -427,6 +453,48 @@ export function Dashboard() {
                   </CardContent>
                 </Card>
               </div>
+            </TabsContent>
+
+            <TabsContent value="customers" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Customers</CardTitle>
+                  <CardDescription>
+                    Manage and view customer data
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="text-center py-8">
+                  <p className="text-muted-foreground">Customer management features coming soon</p>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="products" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Products</CardTitle>
+                  <CardDescription>
+                    View product catalog and performance metrics
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="text-center py-8">
+                  <p className="text-muted-foreground">Product management features coming soon</p>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="settings" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Settings</CardTitle>
+                  <CardDescription>
+                    Configure dashboard and system settings
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="text-center py-8">
+                  <p className="text-muted-foreground">Settings panel coming soon</p>
+                </CardContent>
+              </Card>
             </TabsContent>
           </Tabs>
         </div>
