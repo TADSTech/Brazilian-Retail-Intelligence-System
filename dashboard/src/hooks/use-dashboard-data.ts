@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '../lib/supabase';
 
 // Helper to fetch data in batches to avoid URL length limits
 async function fetchInBatches(

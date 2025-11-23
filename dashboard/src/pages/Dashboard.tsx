@@ -1,15 +1,15 @@
 import { useSearchParams } from 'react-router-dom';
-import { AppSidebar } from '@/components/layout/app-sidebar';
-import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
-import { Separator } from '@/components/ui/separator';
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
-import { useDashboardData } from '@/hooks/use-dashboard-data';
+import { AppSidebar } from '../components/layout/app-sidebar';
+import { SidebarProvider, SidebarInset, SidebarTrigger } from '../components/ui/sidebar';
+import { Separator } from '../components/ui/separator';
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '../components/ui/breadcrumb';
+import { useDashboardData } from '../hooks/use-dashboard-data';
 import { Loader2 } from 'lucide-react';
-import { OverviewTab } from '@/components/dashboard/tabs/overview-tab';
-import { AnalyticsTab } from '@/components/dashboard/tabs/analytics-tab';
-import { CustomersTab } from '@/components/dashboard/tabs/customers-tab';
-import { ProductsTab } from '@/components/dashboard/tabs/products-tab';
-import { SettingsTab } from '@/components/dashboard/tabs/settings-tab';
+import { OverviewTab } from '../components/dashboard/tabs/overview-tab';
+import { AnalyticsTab } from '../components/dashboard/tabs/analytics-tab';
+import { CustomersTab } from '../components/dashboard/tabs/customers-tab';
+import { ProductsTab } from '../components/dashboard/tabs/products-tab';
+import { SettingsTab } from '../components/dashboard/tabs/settings-tab';
 
 export function Dashboard() {
   const { data, loading, error } = useDashboardData();

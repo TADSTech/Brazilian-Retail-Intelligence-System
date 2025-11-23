@@ -1,5 +1,5 @@
 import Plot from 'react-plotly.js';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
 interface RevenueChartProps {
   data: { date: string; revenue: number }[];

@@ -1,5 +1,5 @@
 import Plot from 'react-plotly.js';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
 interface CustomerMapProps {
   data: { zip: string; lat: number; lon: number; city: string; state: string; count: number }[];

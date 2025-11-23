@@ -1,6 +1,6 @@
-import { CategoryChart } from '@/components/dashboard/category-chart';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { CategoryChart } from '../category-chart';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../ui/table';
 import Plot from 'react-plotly.js';
 
 interface ProductsTabProps {

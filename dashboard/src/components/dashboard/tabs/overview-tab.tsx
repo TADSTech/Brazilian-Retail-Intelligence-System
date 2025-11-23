@@ -1,6 +1,6 @@
-import { KPICards } from '@/components/dashboard/kpi-cards';
-import { RevenueChart } from '@/components/dashboard/revenue-chart';
-import { CategoryChart } from '@/components/dashboard/category-chart';
+import { KPICards } from '../kpi-cards';
+import { RevenueChart } from '../revenue-chart';
+import { CategoryChart } from '../category-chart';
 
 interface OverviewTabProps {
   data: any;

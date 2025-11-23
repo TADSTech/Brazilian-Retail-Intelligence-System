@@ -1,5 +1,5 @@
-import { CustomerMap } from '@/components/dashboard/customer-map';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { CustomerMap } from '../customer-map';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
 import Plot from 'react-plotly.js';
 
 interface CustomersTabProps {

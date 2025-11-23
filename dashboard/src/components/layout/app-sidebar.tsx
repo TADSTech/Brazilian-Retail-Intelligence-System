@@ -11,7 +11,7 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarGroupContent,
-} from '@/components/ui/sidebar'
+} from '../ui/sidebar'
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   metrics?: {

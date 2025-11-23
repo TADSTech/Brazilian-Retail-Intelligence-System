@@ -1,6 +1,6 @@
-import { RevenueChart } from '@/components/dashboard/revenue-chart';
-import { OrderStatusChart } from '@/components/dashboard/order-status-chart';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { RevenueChart } from '../revenue-chart';
+import { OrderStatusChart } from '../order-status-chart';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
 import Plot from 'react-plotly.js';
 import { Package, Clock, CreditCard, Truck } from 'lucide-react';
 

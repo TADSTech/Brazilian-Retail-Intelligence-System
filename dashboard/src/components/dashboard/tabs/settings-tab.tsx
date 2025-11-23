@@ -1,8 +1,8 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Button } from '@/components/ui/button';
-import { useTheme } from '@/components/theme-provider';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
+import { Label } from '../../ui/label';
+import { Switch } from '../../ui/switch';
+import { Button } from '../../ui/button';
+import { useTheme } from '../../theme-provider';
 
 export function SettingsTab() {
   const { theme, setTheme } = useTheme();
