@@ -14,12 +14,14 @@ This system processes the Brazilian E-Commerce Public Dataset by Olist, providin
 ```
 Raw Data → Extract → Transform → Load → Analyze
     ↓         ↓         ↓         ↓         ↓
- CSV Files → Python → Cleaned → PostgreSQL → Metabase
-             Scripts   Data       Database   Dashboard
+ CSV Files → Python → Cleaned → PostgreSQL (Local) → Metabase
+             Scripts   Data       Supabase (Prod)    Dashboard
 ```
 
 ## Key Features
 
+- **Dual ETL Environments**: Local (PostgreSQL) and Production (Supabase)
+- **Incremental Updates**: Production ETL supports incremental data loading
 - **Complete ETL Pipeline**: Extract, transform, and load 8 datasets
 - **Data Quality**: Robust cleaning, type conversion, and validation
 - **Multilingual Support**: Portuguese to English category translation
