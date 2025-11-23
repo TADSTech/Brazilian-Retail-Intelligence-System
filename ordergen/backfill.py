@@ -37,7 +37,7 @@ def main():
     
     try:
         # 1. Initialize and Train Generator
-        gen = OrderGenerator(args.data_dir)
+        gen = OrderGenerator()
         gen.train()
         
         # 2. Generate Data with Date Range

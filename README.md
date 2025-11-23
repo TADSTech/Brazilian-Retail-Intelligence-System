@@ -122,6 +122,12 @@ graph TD
 *   Python 3.10+
 *   Node.js 18+ (for frontend)
 
+### 📥 Dataset Setup
+**Important:** You must set up the data before running the application.
+1.  Navigate to the **[Releases](../../releases)** section of this repository.
+2.  Download the dataset archive.
+3.  Extract the CSV files into the `data/` directory in the project root.
+
 ### Option A: Run with Docker (Recommended)
 
 This will start the Backend API, ETL, and Order Generator in a single container.

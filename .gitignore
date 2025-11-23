@@ -71,7 +71,6 @@ migrations/
 node_modules/
 mdpdf.log
 *.log
-DEPLOYMENT.md
 
 # Unignore dashboard lib
 !dashboard/src/lib/
