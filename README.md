@@ -25,8 +25,8 @@ graph TD
 
     subgraph "ETL Pipeline"
         Extract[Extract]
-        Transform[Transform & Clean]
-        Load[Load (Incremental)]
+        Transform["Transform & Clean"]
+        Load["Load (Incremental)"]
     end
 
     subgraph "Backend Services (Docker)"
