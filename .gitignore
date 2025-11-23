@@ -46,6 +46,7 @@ coverage.xml
 # Virtual environments
 .env
 .venv
+venv
 env/
 venv/
 ENV/
@@ -67,3 +68,4 @@ Thumbs.db
 .schema_created
 temp/
 migrations/
+node_modules/
