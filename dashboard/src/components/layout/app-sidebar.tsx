@@ -13,6 +13,14 @@ import {
   SidebarGroupContent,
 } from '@/components/ui/sidebar'
 
+interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  metrics?: {
+    revenue: number;
+    orders: number;
+    customers: number;
+  }
+}
+
 const menuItems = [
   {
     title: 'Dashboard',
@@ -42,22 +50,32 @@ const menuItems = [
   },
 ]
 
-export function AppSidebar() {
+export function AppSidebar({ metrics, ...props }: AppSidebarProps) {
   const location = useLocation()
 
+  const formatValue = (val: number, prefix = '') => {
+    if (val >= 1000000) return `${prefix}${(val / 1000000).toFixed(1)}M`;
+    if (val >= 1000) return `${prefix}${(val / 1000).toFixed(1)}K`;
+    return `${prefix}${val}`;
+  }
+
+  const revenueDisplay = metrics ? formatValue(metrics.revenue, '$') : '$8.2M';
+  const ordersDisplay = metrics ? formatValue(metrics.orders) : '97.6K';
+  const customersDisplay = metrics ? formatValue(metrics.customers) : '1.2M+';
+
   return (
-    <Sidebar collapsible="icon" className="border-r border-gray-200 bg-white">
-      <SidebarHeader className="border-b border-gray-200 bg-white">
+    <Sidebar collapsible="icon" className="border-r border-border bg-sidebar" {...props}>
+      <SidebarHeader className="border-b border-border bg-sidebar">
         <SidebarMenu>
           <SidebarMenuItem>
             <Link to="/" className="w-full">
-              <SidebarMenuButton size="lg" tooltip="BrazilBI" className="hover:bg-gray-50 transition-colors w-full group-data-[collapsible=icon]:justify-center">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-orange-600 text-white shrink-0">
+              <SidebarMenuButton size="lg" tooltip="BrazilBI" className="hover:bg-sidebar-accent transition-colors w-full group-data-[collapsible=icon]:justify-center">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shrink-0">
                   <Home className="size-4" />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
-                  <span className="font-semibold text-sm text-gray-900">BrazilBI</span>
-                  <span className="text-xs text-gray-500">Retail Analytics</span>
+                  <span className="font-semibold text-sm text-sidebar-foreground">BrazilBI</span>
+                  <span className="text-xs text-muted-foreground">Retail Analytics</span>
                 </div>
               </SidebarMenuButton>
             </Link>
@@ -67,11 +85,13 @@ export function AppSidebar() {
       
       <SidebarContent className="px-2">
         <SidebarGroup>
-          <SidebarGroupLabel className="text-xs font-medium text-gray-500 uppercase tracking-wide px-2">Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-xs font-medium text-muted-foreground uppercase tracking-wide px-2">Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="gap-1">
               {menuItems.map((item) => {
-                const isActive = location.pathname === item.url.split('?')[0]
+                const currentTab = new URLSearchParams(location.search).get('tab') || 'overview'
+                const itemTab = new URLSearchParams(item.url.split('?')[1] || '').get('tab') || 'overview'
+                const isActive = location.pathname === item.url.split('?')[0] && currentTab === itemTab
                 return (
                   <SidebarMenuItem key={item.title}>
                     <Link to={item.url} className="w-full">
@@ -79,14 +99,14 @@ export function AppSidebar() {
                         tooltip={item.title}
                         className={`w-full transition-colors group-data-[collapsible=icon]:justify-center ${
                           isActive
-                            ? 'bg-orange-50 text-orange-700 hover:bg-orange-100'
-                            : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                            ? 'bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent/90'
+                            : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
                         }`}
                       >
                         <item.icon className="size-5 shrink-0" />
                         <span className="font-medium group-data-[collapsible=icon]:hidden">{item.title}</span>
                         {item.badge && isActive && (
-                          <span className="ml-auto inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200 group-data-[collapsible=icon]:hidden">
+                          <span className="ml-auto inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary border border-primary/20 group-data-[collapsible=icon]:hidden">
                             {item.badge}
                           </span>
                         )}
@@ -99,39 +119,39 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <div className="my-4 h-px bg-gray-200 mx-2" />
+        <div className="my-4 h-px bg-border mx-2" />
 
         <div className="px-2 pb-3 group-data-[collapsible=icon]:hidden">
-          <div className="bg-orange-50 rounded-lg p-3 border border-orange-100">
+          <div className="bg-sidebar-accent/50 rounded-lg p-3 border border-sidebar-border">
             <div className="flex items-center gap-2 mb-2">
-              <Zap className="size-4 text-orange-600" />
-              <p className="text-xs font-semibold text-gray-900">Key Metrics</p>
+              <Zap className="size-4 text-primary" />
+              <p className="text-xs font-semibold text-sidebar-foreground">Key Metrics</p>
             </div>
             <div className="space-y-2 text-xs">
               <div className="flex justify-between">
-                <span className="text-gray-600">Revenue</span>
-                <span className="font-semibold text-gray-900">$8.2M</span>
+                <span className="text-muted-foreground">Revenue</span>
+                <span className="font-semibold text-sidebar-foreground">{revenueDisplay}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Orders</span>
-                <span className="font-semibold text-gray-900">97.6K</span>
+                <span className="text-muted-foreground">Orders</span>
+                <span className="font-semibold text-sidebar-foreground">{ordersDisplay}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Records</span>
-                <span className="font-semibold text-gray-900">1.2M+</span>
+                <span className="text-muted-foreground">Customers</span>
+                <span className="font-semibold text-sidebar-foreground">{customersDisplay}</span>
               </div>
             </div>
           </div>
         </div>
       </SidebarContent>
       
-      <SidebarFooter className="border-t border-gray-200 bg-white">
+      <SidebarFooter className="border-t border-border bg-sidebar">
         <SidebarMenu>
           <SidebarMenuItem>
             <Link to="/" className="w-full">
-              <SidebarMenuButton tooltip="Logout" className="hover:bg-red-50 hover:text-red-700 transition-colors text-gray-700 w-full group-data-[collapsible=icon]:justify-center">
-                <div className="flex items-center justify-center rounded-md bg-red-50 p-1.5 shrink-0">
-                  <LogOut className="size-4 text-red-600" />
+              <SidebarMenuButton tooltip="Logout" className="hover:bg-destructive/10 hover:text-destructive transition-colors text-sidebar-foreground w-full group-data-[collapsible=icon]:justify-center">
+                <div className="flex items-center justify-center rounded-md bg-destructive/10 p-1.5 shrink-0">
+                  <LogOut className="size-4 text-destructive" />
                 </div>
                 <span className="font-medium group-data-[collapsible=icon]:hidden">Logout</span>
               </SidebarMenuButton>

@@ -1,0 +1,24 @@
+import { KPICards } from '@/components/dashboard/kpi-cards';
+import { RevenueChart } from '@/components/dashboard/revenue-chart';
+import { CategoryChart } from '@/components/dashboard/category-chart';
+
+interface OverviewTabProps {
+  data: any;
+}
+
+export function OverviewTab({ data }: OverviewTabProps) {
+  return (
+    <div className="space-y-4">
+      <KPICards kpis={data.kpis} />
+      
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <div className="col-span-4">
+          <RevenueChart data={data.revenueTrend} />
+        </div>
+        <div className="col-span-3">
+          <CategoryChart data={data.categoryRevenue} />
+        </div>
+      </div>
+    </div>
+  );
+}
