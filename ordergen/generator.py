@@ -5,12 +5,13 @@ import random
 from datetime import datetime, timedelta
 from faker import Faker
 from .utils import SimpleMarkovChain
+from etl_prod.load import get_supabase_client
 
 class OrderGenerator:
-    def __init__(self, data_dir):
-        self.data_dir = data_dir
+    def __init__(self):
         self.fake = Faker('pt_BR')  # Brazilian Portuguese locale
         self.markov = SimpleMarkovChain()
+        self.supabase = get_supabase_client()
         
         # Learned distributions/lists
         self.product_ids = []
@@ -22,32 +23,35 @@ class OrderGenerator:
         
     def train(self):
         """
-        Load existing data and learn distributions.
+        Load existing data from Supabase and learn distributions.
         """
-        print("Training Order Generator...")
+        print("Training Order Generator from Database...")
         
         # Load Products
         try:
-            products_df = pd.read_csv(f"{self.data_dir}/olist_products_dataset.csv")
-            self.product_ids = products_df['product_id'].dropna().tolist()
+            response = self.supabase.table('products').select('product_id').execute()
+            self.product_ids = [item['product_id'] for item in response.data]
         except Exception as e:
             print(f"Warning: Could not load products: {e}")
 
         # Load Sellers
         try:
-            sellers_df = pd.read_csv(f"{self.data_dir}/olist_sellers_dataset.csv")
-            self.seller_ids = sellers_df['seller_id'].dropna().tolist()
+            response = self.supabase.table('sellers').select('seller_id').execute()
+            self.seller_ids = [item['seller_id'] for item in response.data]
         except Exception as e:
             print(f"Warning: Could not load sellers: {e}")
 
         # Load Geolocation (for realistic locations)
         try:
-            geo_df = pd.read_csv(f"{self.data_dir}/olist_geolocation_dataset.csv")
-            # Sample to save memory
-            sample_geo = geo_df.sample(n=min(10000, len(geo_df)))
-            self.zip_codes = sample_geo['geolocation_zip_code_prefix'].tolist()
-            self.cities = sample_geo['geolocation_city'].tolist()
-            self.states = sample_geo['geolocation_state'].tolist()
+            # Fetch a sample of locations (limit to 10000 for performance)
+            response = self.supabase.table('geolocation').select('geolocation_zip_code_prefix,geolocation_city,geolocation_state').limit(10000).execute()
+            
+            if response.data:
+                self.zip_codes = [item['geolocation_zip_code_prefix'] for item in response.data]
+                self.cities = [item['geolocation_city'] for item in response.data]
+                self.states = [item['geolocation_state'] for item in response.data]
+        except Exception as e:
+            print(f"Warning: Could not load geolocation: {e}")
         except Exception as e:
             print(f"Warning: Could not load geolocation: {e}")
 

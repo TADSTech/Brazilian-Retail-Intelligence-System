@@ -25,10 +25,9 @@ gen = None
 @app.on_event("startup")
 async def startup_event():
     global gen
-    data_dir = os.path.join(project_root, 'data')
     log_message("Initializing Order Generator...")
     try:
-        gen = OrderGenerator(data_dir)
+        gen = OrderGenerator()
         gen.train()
         success_message("Order Generator initialized and trained.")
     except Exception as e:

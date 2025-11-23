@@ -20,7 +20,7 @@ The system is built on a modular microservices architecture, separating concerns
 graph TD
     subgraph "Data Sources"
         CSV[Raw CSV Data]
-        Gen[OrderGen (ML/NLP)]
+        Gen["OrderGen (ML/NLP)"]
     end
 
     subgraph "ETL Pipeline"

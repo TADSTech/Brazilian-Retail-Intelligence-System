@@ -21,7 +21,6 @@ COPY api/ ./api/
 COPY etl_prod/ ./etl_prod/
 COPY ordergen/ ./ordergen/
 COPY db_schema/ ./db_schema/
-COPY data/ ./data/
 
 # Expose the port the app runs on
 EXPOSE 8000
