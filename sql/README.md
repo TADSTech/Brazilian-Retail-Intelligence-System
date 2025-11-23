@@ -58,17 +58,3 @@ Review and satisfaction metrics:
 3. **Dashboard Creation**: Use these queries as the foundation for Metabase dashboard cards and charts.
 
 4. **Performance**: Some queries may take time to execute on large datasets. Consider adding appropriate indexes for production use.
-
-## Data Dependencies
-
-All queries assume the following tables are populated:
-- `customers`, `orders`, `order_items`, `products`
-- `sellers`, `order_payments`, `order_reviews`, `geolocation`
-
-## Notes
-
-- All monetary values are in Brazilian Real (BRL)
-- Date/time fields use UTC timezone
-- Review scores range from 1-5
-- Delivery times are calculated in days
-- Geographic data uses Brazilian state codes and city names

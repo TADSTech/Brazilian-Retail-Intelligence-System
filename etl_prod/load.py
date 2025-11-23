@@ -12,8 +12,16 @@ def get_supabase_client():
 
 def batch_upsert(table_name, df, batch_size=1000):
     supabase = get_supabase_client()
+    
+    # Pre-process DataFrame for JSON serialization
+    # Convert datetime objects to ISO format strings
+    df_clean = df.copy()
+    for col in df_clean.columns:
+        if pd.api.types.is_datetime64_any_dtype(df_clean[col]):
+            df_clean[col] = df_clean[col].apply(lambda x: x.isoformat() if pd.notnull(x) else None)
+            
     # Convert to records and handle NaN -> None for JSON compatibility
-    records = df.where(pd.notnull(df), None).to_dict('records')
+    records = df_clean.where(pd.notnull(df_clean), None).to_dict('records')
     total = len(records)
     
     log_message(f"Upserting {total} records into {table_name}...")

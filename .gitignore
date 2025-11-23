@@ -69,3 +69,6 @@ Thumbs.db
 temp/
 migrations/
 node_modules/
+mdpdf.log
+*.log
+DEPLOYMENT.md

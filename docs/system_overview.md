@@ -16,12 +16,17 @@ Raw Data → Extract → Transform → Load → Analyze
     ↓         ↓         ↓         ↓         ↓
  CSV Files → Python → Cleaned → PostgreSQL (Local) → Metabase
              Scripts   Data       Supabase (Prod)    Dashboard
+                                        ↑
+                                   OrderGen (API)
 ```
 
 ## Key Features
 
 - **Dual ETL Environments**: Local (PostgreSQL) and Production (Supabase)
 - **Incremental Updates**: Production ETL supports incremental data loading
+- **Order Generator**: Synthetic data generation trained on real data patterns
+- **API Service**: FastAPI-based backend for triggering ETL and OrderGen tasks
+- **Dockerized**: Production backend containerized for easy deployment
 - **Complete ETL Pipeline**: Extract, transform, and load 8 datasets
 - **Data Quality**: Robust cleaning, type conversion, and validation
 - **Multilingual Support**: Portuguese to English category translation
@@ -38,7 +43,7 @@ Raw Data → Extract → Transform → Load → Analyze
 pip install -r requirements.txt
 
 # Configure database
-# Edit .env file with your PostgreSQL credentials
+# Edit .env file with your PostgreSQL/Supabase credentials
 ```
 
 ### 2. Data Acquisition
@@ -49,17 +54,26 @@ unzip brazilian-ecommerce.zip
 mv *.csv data/
 ```
 
-### 3. Database Setup
+### 3. Run with Docker (Recommended for Prod)
+```bash
+# Build and run the backend container
+./run_docker.sh
+
+# Trigger Order Generation via API
+curl -X POST http://localhost:8000/orders/generate -H "Content-Type: application/json" -d '{"count": 10}'
+```
+
+### 4. Local Development
 ```bash
 # Create database schema
 python db_schema/create_schema.py
 
-# Run ETL pipeline
-python -m etl.main
+# Run Local ETL pipeline
+python -m etl_local.main
 ```
 
-### 4. Analysis
-Connect Metabase or your preferred BI tool to the PostgreSQL database for analysis.
+### 5. Analysis
+Connect Metabase or your preferred BI tool to the PostgreSQL/Supabase database for analysis.
 
 ## ETL Pipeline Details
 

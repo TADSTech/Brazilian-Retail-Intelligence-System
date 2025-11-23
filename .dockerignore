@@ -1,0 +1,42 @@
+# Git
+.git
+.gitignore
+
+# Environment Variables (Secrets)
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+.venv/
+env/
+.env/
+
+# Frontend (Deployed separately)
+dashboard/
+
+# Documentation
+docs/
+
+# Local Development & Legacy
+etl/
+etl_local/
+sql/
+run_docker.sh
+README.md
+
+# IDEs
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+
+# Project Specific
+mdpdf.log
+*.log

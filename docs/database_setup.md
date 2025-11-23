@@ -28,15 +28,20 @@ GRANT ALL PRIVILEGES ON DATABASE brazilretail_bi TO brazilretail_user;
 
 Update the `.env` file in the project root:
 
-```
+```env
+# Local PostgreSQL
 DATABASE_URL=postgresql://username:password@localhost:5432/brazilretail_bi
+
+# Production Supabase
+SUPABASE_URL=https://your-project.supabase.co
+SUPERKEY=your-service-role-key
 ```
 
 Replace with your actual credentials.
 
 ## Step 4: Create Schema
 
-Run the schema creation script:
+Run the schema creation script (works for both Local and Supabase if configured):
 
 ```bash
 python db_schema/create_schema.py
@@ -51,6 +56,14 @@ This creates all tables:
 - order_reviews
 - products
 - sellers
+
+## Step 5: Setup Constraints and Indexes
+
+After creating the schema, run the constraints script to add Foreign Keys and Indexes. This is crucial for performance and data integrity.
+
+```bash
+python db_schema/setup_constraints.py
+```
 
 ## Database Schema Overview
 
