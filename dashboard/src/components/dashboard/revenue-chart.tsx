@@ -11,12 +11,12 @@ export function RevenueChart({ data }: RevenueChartProps) {
   const revenues = data.map(d => d.revenue);
 
   return (
-    <Card className="col-span-4">
+    <Card className="col-span-1 sm:col-span-2 md:col-span-2 lg:col-span-4">
       <CardHeader>
         <CardTitle>Revenue Trend</CardTitle>
       </CardHeader>
       <CardContent className="pl-2">
-        <div className="h-[350px] w-full">
+        <div className="h-[250px] sm:h-[300px] md:h-[350px] w-full">
           <Plot
             data={[
               {

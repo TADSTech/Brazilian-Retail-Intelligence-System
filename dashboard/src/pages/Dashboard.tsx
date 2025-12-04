@@ -4,17 +4,32 @@ import { SidebarProvider, SidebarInset, SidebarTrigger } from '../components/ui/
 import { Separator } from '../components/ui/separator';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '../components/ui/breadcrumb';
 import { useDashboardData } from '../hooks/use-dashboard-data';
-import { Loader2 } from 'lucide-react';
 import { OverviewTab } from '../components/dashboard/tabs/overview-tab';
 import { AnalyticsTab } from '../components/dashboard/tabs/analytics-tab';
 import { CustomersTab } from '../components/dashboard/tabs/customers-tab';
 import { ProductsTab } from '../components/dashboard/tabs/products-tab';
 import { SettingsTab } from '../components/dashboard/tabs/settings-tab';
+import { OverviewTabSkeleton, AnalyticsTabSkeleton, CustomersTabSkeleton, ProductsTabSkeleton } from '../components/dashboard/skeleton-loaders';
 
 export function Dashboard() {
   const { data, loading, error } = useDashboardData();
   const [searchParams] = useSearchParams();
   const tab = searchParams.get('tab') || 'overview';
+
+  const renderSkeleton = () => {
+    switch (tab) {
+      case 'analytics':
+        return <AnalyticsTabSkeleton />;
+      case 'customers':
+        return <CustomersTabSkeleton />;
+      case 'products':
+        return <ProductsTabSkeleton />;
+      case 'settings':
+        return null;
+      default:
+        return <OverviewTabSkeleton />;
+    }
+  };
 
   const renderTab = () => {
     switch (tab) {
@@ -78,8 +93,8 @@ export function Dashboard() {
           </div>
 
           {loading ? (
-            <div className="flex h-[50vh] items-center justify-center">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <div className="space-y-4">
+              {renderSkeleton()}
             </div>
           ) : error ? (
             <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-4 text-destructive">

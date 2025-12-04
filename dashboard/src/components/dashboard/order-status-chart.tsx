@@ -7,13 +7,13 @@ interface OrderStatusChartProps {
 
 export function OrderStatusChart({ data }: OrderStatusChartProps) {
   return (
-    <Card className="col-span-4">
+    <Card className="col-span-1 sm:col-span-2 md:col-span-2 lg:col-span-4">
       <CardHeader>
         <CardTitle>Order Status Distribution</CardTitle>
         <CardDescription>Breakdown of orders by their current status</CardDescription>
       </CardHeader>
       <CardContent className="pl-2">
-        <ResponsiveContainer width="100%" height={350}>
+        <ResponsiveContainer width="100%" height={300}>
           <BarChart data={data}>
             <XAxis
               dataKey="status"

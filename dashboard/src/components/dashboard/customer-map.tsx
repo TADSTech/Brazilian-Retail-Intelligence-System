@@ -12,12 +12,12 @@ export function CustomerMap({ data }: CustomerMapProps) {
   const texts = data.map(d => `${d.city}, ${d.state}: ${d.count} customers`);
 
   return (
-    <Card className="col-span-4 md:col-span-3">
+    <Card className="col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-3">
       <CardHeader>
         <CardTitle>Customer Distribution (Heatmap)</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[350px] w-full">
+        <div className="h-[250px] sm:h-[300px] md:h-[350px] w-full">
           <Plot
             data={[
               {

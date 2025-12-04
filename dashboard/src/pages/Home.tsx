@@ -18,8 +18,8 @@ export function Home() {
       </nav>
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center px-8 overflow-auto">
-        <div className="max-w-5xl w-full grid lg:grid-cols-2 gap-16 items-center py-12">
+      <div className="flex-1 flex items-center justify-center px-10 overflow-auto">
+        <div className="max-w-5xl w-full grid lg:grid-cols-2 gap-16 items-center py-12 mt-8 md:mt-0">
           {/* Left: Content */}
           <div className="space-y-8">
             <div className="space-y-4">

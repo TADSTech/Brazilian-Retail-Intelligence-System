@@ -11,7 +11,7 @@ export function OverviewTab({ data }: OverviewTabProps) {
     <div className="space-y-4">
       <KPICards kpis={data.kpis} />
       
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+      <div className="grid gap-2 sm:gap-3 md:gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-7">
         <div className="col-span-4">
           <RevenueChart data={data.revenueTrend} />
         </div>

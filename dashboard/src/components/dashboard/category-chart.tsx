@@ -10,12 +10,12 @@ export function CategoryChart({ data }: CategoryChartProps) {
   const revenues = data.map(d => d.revenue);
 
   return (
-    <Card className="col-span-4 md:col-span-2">
+    <Card className="col-span-1 sm:col-span-2 md:col-span-2 lg:col-span-2">
       <CardHeader>
         <CardTitle>Top Categories by Revenue</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[350px] w-full">
+        <div className="h-[250px] sm:h-[300px] md:h-[350px] w-full">
           <Plot
             data={[
               {

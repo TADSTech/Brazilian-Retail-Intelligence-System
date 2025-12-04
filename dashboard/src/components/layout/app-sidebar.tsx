@@ -11,6 +11,7 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarGroupContent,
+  useSidebar,
 } from '../ui/sidebar'
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
@@ -52,11 +53,19 @@ const menuItems = [
 
 export function AppSidebar({ metrics, ...props }: AppSidebarProps) {
   const location = useLocation()
+  const { setOpenMobile, isMobile } = useSidebar()
 
   const formatValue = (val: number, prefix = '') => {
     if (val >= 1000000) return `${prefix}${(val / 1000000).toFixed(1)}M`;
     if (val >= 1000) return `${prefix}${(val / 1000).toFixed(1)}K`;
     return `${prefix}${val}`;
+  }
+
+  const handleTabSelect = () => {
+    // Close mobile sidebar when a tab is selected
+    if (isMobile) {
+      setOpenMobile(false)
+    }
   }
 
   const revenueDisplay = metrics ? formatValue(metrics.revenue, '$') : '$8.2M';
@@ -94,7 +103,7 @@ export function AppSidebar({ metrics, ...props }: AppSidebarProps) {
                 const isActive = location.pathname === item.url.split('?')[0] && currentTab === itemTab
                 return (
                   <SidebarMenuItem key={item.title}>
-                    <Link to={item.url} className="w-full">
+                    <Link to={item.url} className="w-full" onClick={handleTabSelect}>
                       <SidebarMenuButton
                         tooltip={item.title}
                         className={`w-full transition-colors group-data-[collapsible=icon]:justify-center ${
