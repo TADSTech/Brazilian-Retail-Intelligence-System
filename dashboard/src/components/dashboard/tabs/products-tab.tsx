@@ -24,7 +24,6 @@ export function ProductsTab({ data }: ProductsTabProps) {
 
   return (
     <div className="space-y-4">
-      {/* Revenue by Category */}
       <div className="grid gap-4 md:grid-cols-2">
         <CategoryChart data={categoryRevenue} />
         
@@ -56,7 +55,6 @@ export function ProductsTab({ data }: ProductsTabProps) {
         </Card>
       </div>
 
-      {/* Top Products Table */}
       <Card>
         <CardHeader>
           <CardTitle>Top-Selling Products</CardTitle>
@@ -94,9 +92,7 @@ export function ProductsTab({ data }: ProductsTabProps) {
         </CardContent>
       </Card>
 
-      {/* Category Performance & Sales Concentration */}
       <div className="grid gap-4 md:grid-cols-2">
-        {/* Category Performance */}
         <Card>
           <CardHeader>
             <CardTitle>Category Performance</CardTitle>
@@ -136,7 +132,6 @@ export function ProductsTab({ data }: ProductsTabProps) {
           </CardContent>
         </Card>
 
-        {/* Sales Concentration (Pareto) */}
         <Card>
           <CardHeader>
             <CardTitle>Sales Concentration</CardTitle>
@@ -205,7 +200,6 @@ export function ProductsTab({ data }: ProductsTabProps) {
         </Card>
       </div>
 
-      {/* Top Categories by Revenue */}
       <Card>
         <CardHeader>
           <CardTitle>Category Revenue Breakdown</CardTitle>

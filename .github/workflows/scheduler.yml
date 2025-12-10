@@ -4,7 +4,6 @@ on:
   schedule:
     # Run every 14 minutes
     - cron: '*/14 * * * *'
-  # Allow manual trigger from GitHub UI
   workflow_dispatch:
 
 jobs:

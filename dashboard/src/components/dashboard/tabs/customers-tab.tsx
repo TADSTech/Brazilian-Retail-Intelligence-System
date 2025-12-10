@@ -11,7 +11,6 @@ export function CustomersTab({ data }: CustomersTabProps) {
 
   return (
     <div className="space-y-4">
-      {/* Customer Distribution Map and Top Locations */}
       <div className="grid gap-4 md:grid-cols-2">
         <CustomerMap data={customerGeo} />
         
@@ -34,9 +33,7 @@ export function CustomersTab({ data }: CustomersTabProps) {
         </Card>
       </div>
 
-      {/* Customer Behavior Analytics */}
       <div className="grid gap-4 md:grid-cols-2">
-        {/* Repeat Purchase Rate */}
         <Card>
           <CardHeader>
             <CardTitle>Customer Loyalty</CardTitle>
@@ -54,7 +51,6 @@ export function CustomersTab({ data }: CustomersTabProps) {
           </CardContent>
         </Card>
 
-        {/* Average Review Score */}
         <Card>
           <CardHeader>
             <CardTitle>Customer Satisfaction</CardTitle>
@@ -73,7 +69,6 @@ export function CustomersTab({ data }: CustomersTabProps) {
         </Card>
       </div>
 
-      {/* New vs Returning Customers */}
       <Card>
         <CardHeader>
           <CardTitle>Customer Acquisition Trends</CardTitle>
@@ -130,9 +125,7 @@ export function CustomersTab({ data }: CustomersTabProps) {
         </CardContent>
       </Card>
 
-      {/* Review Score Distribution & Delivery Impact */}
       <div className="grid gap-4 md:grid-cols-2">
-        {/* Review Score Distribution */}
         <Card>
           <CardHeader>
             <CardTitle>Review Score Distribution</CardTitle>
@@ -171,7 +164,6 @@ export function CustomersTab({ data }: CustomersTabProps) {
           </CardContent>
         </Card>
 
-        {/* Delivery Performance Impact */}
         <Card>
           <CardHeader>
             <CardTitle>Delivery Impact on Satisfaction</CardTitle>

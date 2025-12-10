@@ -25,7 +25,6 @@ export function AnalyticsTab({ data }: AnalyticsTabProps) {
 
   return (
     <div className="space-y-4">
-      {/* KPI Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -72,7 +71,6 @@ export function AnalyticsTab({ data }: AnalyticsTabProps) {
         </Card>
       </div>
 
-      {/* Revenue and Order Status */}
       <div className="grid gap-4 md:grid-cols-1">
         <RevenueChart data={revenueTrend} />
       </div>
@@ -80,7 +78,6 @@ export function AnalyticsTab({ data }: AnalyticsTabProps) {
       <div className="grid gap-4 md:grid-cols-2">
         <OrderStatusChart data={orderStatus} />
         
-        {/* Payment Methods Distribution */}
         <Card>
           <CardHeader>
             <CardTitle>Payment Methods</CardTitle>
@@ -120,9 +117,7 @@ export function AnalyticsTab({ data }: AnalyticsTabProps) {
         </Card>
       </div>
 
-      {/* Delivery Performance & Installment Distribution */}
       <div className="grid gap-4 md:grid-cols-2">
-        {/* Delivery Lead Time Distribution */}
         <Card>
           <CardHeader>
             <CardTitle>Delivery Lead Time</CardTitle>
@@ -161,7 +156,6 @@ export function AnalyticsTab({ data }: AnalyticsTabProps) {
           </CardContent>
         </Card>
 
-        {/* Installment Distribution */}
         <Card>
           <CardHeader>
             <CardTitle>Payment Installments</CardTitle>
