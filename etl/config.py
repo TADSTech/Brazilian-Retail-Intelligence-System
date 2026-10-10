@@ -48,7 +48,8 @@ class Settings:
     )
     database_url: str | None = field(default_factory=lambda: os.getenv("DATABASE_URL"))
     data_dir: Path = field(default_factory=lambda: Path(os.getenv("DATA_DIR", PROJECT_ROOT / "data")))
-    batch_size: int = field(default_factory=lambda: int(os.getenv("ETL_BATCH_SIZE", "1000")))
+    batch_size: int = field(default_factory=lambda: int(os.getenv("ETL_BATCH_SIZE", "5000")))
+    load_workers: int = field(default_factory=lambda: int(os.getenv("ETL_LOAD_WORKERS", "2")))
 
     def require_supabase(self) -> tuple[str, str]:
         if not self.supabase_url or not self.supabase_service_role_key:

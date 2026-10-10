@@ -73,11 +73,10 @@ The dashboard queries Supabase directly with the publishable key and never calls
 | `.env` | Secrets and backend choice (gitignored) |
 | `etl/config.py` | Reads env, defines `SOURCE_FILES` and `TABLE_ORDER` |
 | `Dockerfile` | Python 3.12-slim image running uvicorn |
-| `.github/workflows/scheduler.yml` | Hourly synthetic orders, generated directly against Supabase |
-| `.github/workflows/etl.yml` | Manual ETL run: Kaggle data fetch + full load |
+| `.github/workflows/scheduler.yml` | Weekly synthetic orders, generated directly against Supabase |
 
 ## Deployment
 
 Backend (optional): `./run_docker.sh` (builds the image, passes `--env-file .env`, exposes 8000) — the dashboard does not depend on it.
 Frontend: `dashboard/` deploys to Vercel (root directory `dashboard`, config in `dashboard/vercel.json`).
-CI: workflows use `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` repo secrets (plus `KAGGLE_USERNAME` / `KAGGLE_KEY` for the ETL data fetch) — no deployed API required.
+CI: workflows use `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` repo secrets — no deployed API and no external data fetch. The ETL is a local command (`python -m etl`), not a CI job.

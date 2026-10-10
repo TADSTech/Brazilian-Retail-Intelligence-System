@@ -7,6 +7,7 @@ postgres: bulk insert via SQLAlchemy against DATABASE_URL (local path).
 from __future__ import annotations
 
 import logging
+import time
 from abc import ABC, abstractmethod
 
 import pandas as pd
@@ -79,15 +80,29 @@ class Loader(ABC):
 
 
 class SupabaseLoader(Loader):
-    """Batched upsert through the Supabase REST client."""
+    """Batched upsert through the Supabase REST client.
 
-    def __init__(self, batch_size: int | None = None, full_reload: bool = False):
+    Speed levers (env): ``ETL_BATCH_SIZE`` rows per request (default 5000) and
+    ``ETL_LOAD_WORKERS`` concurrent batch requests (default 2). Batches are
+    independent PK upserts, so concurrency is safe; failed batches retry up to
+    four times with backoff (upserts are idempotent).
+    """
+
+    RETRY_ATTEMPTS = 4
+
+    def __init__(
+        self,
+        batch_size: int | None = None,
+        workers: int | None = None,
+        full_reload: bool = False,
+    ):
         import httpx
         from supabase import create_client
 
         url, key = settings.require_supabase()
         self.client = create_client(url, key)
         self.batch_size = batch_size or settings.batch_size
+        self.workers = workers or settings.load_workers
         self.full_reload = full_reload
         # Large tables (geolocation ~740k rows) exceed the default 5s read timeout.
         self.client.postgrest.session.timeout = httpx.Timeout(120.0, connect=10.0)
@@ -96,15 +111,52 @@ class SupabaseLoader(Loader):
         res = self.client.table(table).select("*", count="exact", head=True).execute()
         return res.count or 0
 
+    def _write_batch(self, table: str, batch: list[dict]) -> None:
+        for attempt in range(1, self.RETRY_ATTEMPTS + 1):
+            try:
+                # returning=minimal skips the echoed RETURNING payload.
+                self.client.table(table).upsert(batch, returning="minimal").execute()
+                return
+            except Exception:
+                if attempt == self.RETRY_ATTEMPTS:
+                    raise
+                logger.warning(
+                    "%s batch failed (attempt %d/%d), backing off",
+                    table,
+                    attempt,
+                    self.RETRY_ATTEMPTS,
+                )
+                time.sleep(2 ** (attempt - 1))
+
     def upsert(self, table: str, df: pd.DataFrame) -> int:
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+
         records = records_for_json(df)
         total = len(records)
-        logger.info("Upserting %d rows into %s", total, table)
-        for start in range(0, total, self.batch_size):
-            batch = records[start : start + self.batch_size]
-            self.client.table(table).upsert(batch).execute()
-            if (start // self.batch_size) % 50 == 0:
-                logger.info("  %s: %d/%d rows", table, min(start + self.batch_size, total), total)
+        batches = [records[i : i + self.batch_size] for i in range(0, total, self.batch_size)]
+        workers = max(1, min(self.workers, len(batches)))
+        logger.info(
+            "Upserting %d rows into %s in %d batches (%d workers)",
+            total,
+            table,
+            len(batches),
+            workers,
+        )
+        done = 0
+        if workers == 1:
+            for batch in batches:
+                self._write_batch(table, batch)
+                done += 1
+                if done % 20 == 0 or done == len(batches):
+                    logger.info("  %s: %d/%d batches", table, done, len(batches))
+        else:
+            with ThreadPoolExecutor(max_workers=workers) as pool:
+                futures = [pool.submit(self._write_batch, table, batch) for batch in batches]
+                for future in as_completed(futures):
+                    future.result()  # re-raise the first failure
+                    done += 1
+                    if done % 20 == 0 or done == len(batches):
+                        logger.info("  %s: %d/%d batches", table, done, len(batches))
         return total
 
 

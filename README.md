@@ -59,7 +59,7 @@ The pipeline is one package, `etl/`, run as `python -m etl`. Three stages:
 
 **Load** (`etl/loaders.py`) — a small `Loader` ABC with two backends selected by `ETL_BACKEND`:
 
-- `SupabaseLoader` — converts each DataFrame to JSON-safe records (datetimes → ISO 8601, NaN/NaT → `null`), then batch-upserts through the Supabase REST client with a 120 s read timeout (large tables like geolocation exceed the 5 s default). Default batch size is 1,000 rows (`ETL_BATCH_SIZE` to override). This is the production/Docker path; it needs only `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY`.
+- `SupabaseLoader` — converts each DataFrame to JSON-safe records (datetimes → ISO 8601, NaN/NaT → `null`), then batch-upserts through the Supabase REST client with `return=minimal` (no echoed rows), retries on transient failures, and concurrent batch requests. Defaults: 5,000 rows/request (`ETL_BATCH_SIZE`) across 2 workers (`ETL_LOAD_WORKERS`), 120 s read timeout. This is the production/Docker path; it needs only `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY`.
 - `PostgresLoader` — bulk insert via SQLAlchemy against `DATABASE_URL`. With `--full-reload` it truncates children before parents to respect FKs. This is the local-dev path.
 
 Both honour the same FK-safe table order declared once in `etl/config.py::TABLE_ORDER`:

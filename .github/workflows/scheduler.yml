@@ -2,14 +2,14 @@ name: Synthetic Order Generation
 
 on:
   schedule:
-    # Hourly synthetic traffic, written straight to Supabase (no hosted API needed).
-    - cron: "0 * * * *"
+    # Weekly (was hourly) — Mondays 05:00 UTC, small demo batch.
+    - cron: "0 5 * * 1"
   workflow_dispatch:
     inputs:
       count:
         description: "Number of synthetic orders to generate"
         required: false
-        default: "50"
+        default: "25"
 
 jobs:
   generate-orders:
@@ -29,5 +29,5 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          COUNT: ${{ github.event.inputs.count || 50 }}
+          COUNT: ${{ github.event.inputs.count || 25 }}
         run: python -m ordergen.main --count "$COUNT"

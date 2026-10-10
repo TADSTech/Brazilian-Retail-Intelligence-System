@@ -61,6 +61,8 @@ python -m db_schema.setup_constraints
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase loader (`SUPERKEY` accepted as legacy alias) |
 | `DATABASE_URL` | postgres loader + db_schema tooling |
 | `DATA_DIR` | optional override for the `data/` CSV directory |
+| `ETL_BATCH_SIZE` | Supabase upsert batch size (default 5000) |
+| `ETL_LOAD_WORKERS` | concurrent batch requests during Supabase load (default 2) |
 
 ## Conventions
 
