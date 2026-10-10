@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from .common import finalize, load_category_translations
+from .common import load_category_translations
 
 
 def transform_products(
@@ -34,4 +34,8 @@ def transform_products(
     else:
         data["product_category_name_english"] = data["product_category_name"]
 
-    return finalize(data)
+    # Deliberately NOT finalize(): 611 products lack two or more dimension
+    # columns and finalize would drop them, breaking fk_order_items_products.
+    # Every column except product_id is nullable in the schema.
+    data = data.dropna(subset=["product_id"])
+    return data.drop_duplicates()

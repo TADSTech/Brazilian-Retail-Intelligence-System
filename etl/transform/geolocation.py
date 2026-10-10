@@ -15,4 +15,11 @@ def transform_geolocation(data: pd.DataFrame) -> pd.DataFrame:
 
     data["geolocation_state_initials"] = data["geolocation_state"]
     data["geolocation_state"] = map_state_initials(data["geolocation_state"])
-    return finalize(data)
+    data = finalize(data)
+
+    # The source CSV has no id column; the DB table uses a SERIAL primary key.
+    # Assign a deterministic id (stable sort, then 1..N) so re-runs upsert on the
+    # PK instead of blind-inserting duplicate rows.
+    data = data.sort_values(by=list(data.columns), kind="mergesort").reset_index(drop=True)
+    data["geolocation_id"] = range(1, len(data) + 1)
+    return data

@@ -15,7 +15,11 @@ def main(argv: list[str] | None = None) -> int:
     configure_logging()
     parser = argparse.ArgumentParser(prog="etl", description="Run the Olist retail ETL pipeline.")
     parser.add_argument("--data-dir", default=None, help="Directory containing the Olist CSVs.")
-    parser.add_argument("--full-reload", action="store_true", help="Truncate target tables first (postgres backend).")
+    parser.add_argument(
+        "--full-reload",
+        action="store_true",
+        help="Force a full write: postgres truncates first; supabase re-upserts even if the table is already loaded.",
+    )
     parser.add_argument(
         "--tables",
         nargs="+",

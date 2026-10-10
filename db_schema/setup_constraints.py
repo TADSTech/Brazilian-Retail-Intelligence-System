@@ -78,7 +78,8 @@ def add_indexes(connection):
         # Other useful indexes based on common queries
         {"name": "idx_orders_status", "table": "orders", "column": "order_status"},
         {"name": "idx_orders_purchase_timestamp", "table": "orders", "column": "order_purchase_timestamp"},
-        {"name": "idx_products_category", "table": "products", "column": "product_category_name"}
+        {"name": "idx_products_category", "table": "products", "column": "product_category_name"},
+        {"name": "idx_geolocation_zip_code_prefix", "table": "geolocation", "column": "geolocation_zip_code_prefix"}
     ]
 
     for idx in indexes:

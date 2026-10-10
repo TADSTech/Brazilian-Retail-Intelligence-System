@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from .common import finalize, nat_to_none, strip_timezone
+from .common import strip_timezone
 
 
 def transform_order_reviews(data: pd.DataFrame) -> pd.DataFrame:
@@ -14,6 +14,10 @@ def transform_order_reviews(data: pd.DataFrame) -> pd.DataFrame:
     data["review_creation_date"] = strip_timezone(data["review_creation_date"])
     data["review_answer_timestamp"] = strip_timezone(data["review_answer_timestamp"])
 
-    data = finalize(data)
-    # review_id is a soft key; the table PK is order_id, so one review per order.
-    return data.drop_duplicates(subset=["review_id"], keep="first")
+    # Deliberately NOT finalize(): 56k+ reviews have a score but no free-text
+    # title/message, and finalize's dropna would discard them. Text columns
+    # are nullable in the schema. Soft-dedupe on review_id, then enforce the
+    # table PK (one row per order_id — 551 raw orders have multiple reviews).
+    data = data.dropna(subset=["order_id"])
+    data = data.drop_duplicates(subset=["review_id"], keep="first")
+    return data.drop_duplicates(subset=["order_id"], keep="first")

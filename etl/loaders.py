@@ -27,6 +27,10 @@ def records_for_json(df: pd.DataFrame) -> list[dict]:
         for key, value in row.items():
             if value is None or (isinstance(value, float) and pd.isna(value)) or value is pd.NaT:
                 row[key] = None
+            elif isinstance(value, pd.Timestamp):
+                # Object-dtype columns (e.g. after nat_to_none) hold Timestamps,
+                # not datetime64 — convert those too.
+                row[key] = value.isoformat()
             elif not isinstance(value, (str, int, float, bool)) and pd.isna(value):
                 row[key] = None
     return records
@@ -35,9 +39,17 @@ def records_for_json(df: pd.DataFrame) -> list[dict]:
 class Loader(ABC):
     """Minimal loader contract: upsert one table, honour FK order."""
 
+    #: When True, tables whose target row count already matches the source are skipped.
+    #: full_reload disables the skip (postgres truncates; supabase force re-upserts).
+    full_reload: bool = False
+
     @abstractmethod
     def upsert(self, table: str, df: pd.DataFrame) -> int:
         """Write rows for `table`. Returns rows written."""
+
+    def row_count(self, table: str) -> int:
+        """Rows currently in the target table; -1 when unknown (never skips)."""
+        return -1
 
     def load(
         self,
@@ -52,6 +64,16 @@ class Loader(ABC):
             if df is None or df.empty:
                 logger.info("Skipping %s (no rows)", table)
                 continue
+            existing = self.row_count(table) if not self.full_reload else -1
+            if existing >= len(df):
+                logger.info(
+                    "Skipping %s (already loaded: %d rows in target, %d in source)",
+                    table,
+                    existing,
+                    len(df),
+                )
+                results[table] = 0
+                continue
             results[table] = self.upsert(table, df)
         return results
 
@@ -59,12 +81,20 @@ class Loader(ABC):
 class SupabaseLoader(Loader):
     """Batched upsert through the Supabase REST client."""
 
-    def __init__(self, batch_size: int | None = None):
+    def __init__(self, batch_size: int | None = None, full_reload: bool = False):
+        import httpx
         from supabase import create_client
 
         url, key = settings.require_supabase()
         self.client = create_client(url, key)
         self.batch_size = batch_size or settings.batch_size
+        self.full_reload = full_reload
+        # Large tables (geolocation ~740k rows) exceed the default 5s read timeout.
+        self.client.postgrest.session.timeout = httpx.Timeout(120.0, connect=10.0)
+
+    def row_count(self, table: str) -> int:
+        res = self.client.table(table).select("*", count="exact", head=True).execute()
+        return res.count or 0
 
     def upsert(self, table: str, df: pd.DataFrame) -> int:
         records = records_for_json(df)
@@ -73,6 +103,8 @@ class SupabaseLoader(Loader):
         for start in range(0, total, self.batch_size):
             batch = records[start : start + self.batch_size]
             self.client.table(table).upsert(batch).execute()
+            if (start // self.batch_size) % 50 == 0:
+                logger.info("  %s: %d/%d rows", table, min(start + self.batch_size, total), total)
         return total
 
 
