@@ -64,7 +64,7 @@ Failure to train disables `/orders/generate` (503) but leaves the API up.
 
 ### Dashboard
 
-The dashboard queries Supabase directly with the publishable key and calls the API only for health/control. Vercel hosts it separately.
+The dashboard queries Supabase directly with the publishable key and never calls the FastAPI control plane. Vercel hosts it as a static SPA.
 
 ## Configuration
 
@@ -73,10 +73,11 @@ The dashboard queries Supabase directly with the publishable key and calls the A
 | `.env` | Secrets and backend choice (gitignored) |
 | `etl/config.py` | Reads env, defines `SOURCE_FILES` and `TABLE_ORDER` |
 | `Dockerfile` | Python 3.12-slim image running uvicorn |
-| `.github/workflows/scheduler.yml` | Hourly `POST /orders/generate` against deployment |
+| `.github/workflows/scheduler.yml` | Hourly synthetic orders, generated directly against Supabase |
+| `.github/workflows/etl.yml` | Manual ETL run: Kaggle data fetch + full load |
 
 ## Deployment
 
-Backend: `./run_docker.sh` (builds the image, passes `--env-file .env`, exposes 8000).
-Frontend: `dashboard/` deploys to Vercel (`dashboard/vercel.json`).
-The GitHub Actions workflow needs a `BACKEND_URL` secret pointing at the deployed API.
+Backend (optional): `./run_docker.sh` (builds the image, passes `--env-file .env`, exposes 8000) — the dashboard does not depend on it.
+Frontend: `dashboard/` deploys to Vercel (root directory `dashboard`, config in `dashboard/vercel.json`).
+CI: workflows use `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` repo secrets (plus `KAGGLE_USERNAME` / `KAGGLE_KEY` for the ETL data fetch) — no deployed API required.

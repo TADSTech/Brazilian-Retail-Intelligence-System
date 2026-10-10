@@ -2,16 +2,32 @@ name: Synthetic Order Generation
 
 on:
   schedule:
-    # Hourly synthetic traffic against the deployed API.
+    # Hourly synthetic traffic, written straight to Supabase (no hosted API needed).
     - cron: "0 * * * *"
   workflow_dispatch:
+    inputs:
+      count:
+        description: "Number of synthetic orders to generate"
+        required: false
+        default: "50"
 
 jobs:
-  trigger-order-gen:
+  generate-orders:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger order generation
-        run: |
-          curl -fsS -X POST "${{ secrets.BACKEND_URL }}/orders/generate" \
-            -H "Content-Type: application/json" \
-            -d '{"count": 50}'
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Generate synthetic orders
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          COUNT: ${{ github.event.inputs.count || 50 }}
+        run: python -m ordergen.main --count "$COUNT"
