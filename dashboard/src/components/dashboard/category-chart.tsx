@@ -1,5 +1,6 @@
 import Plot from 'react-plotly.js';
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { CHART } from "../../lib/chart-colors";
 
 interface CategoryChartProps {
   data: { category: string; revenue: number }[];
@@ -14,8 +15,8 @@ export function CategoryChart({ data }: CategoryChartProps) {
       <CardHeader>
         <CardTitle>Top Categories by Revenue</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="h-[250px] sm:h-[300px] md:h-[350px] w-full">
+        <CardContent>
+          <div className="h-[250px] sm:h-[300px] md:h-[350px] w-full" role="img" aria-label="Top categories by revenue">
           <Plot
             data={[
               {
@@ -24,7 +25,7 @@ export function CategoryChart({ data }: CategoryChartProps) {
                 type: 'bar',
                 orientation: 'h',
                 marker: {
-                  color: '#ea580c',
+                  color: CHART.accent,
                   opacity: 0.8,
                 },
               },
@@ -37,15 +38,15 @@ export function CategoryChart({ data }: CategoryChartProps) {
               plot_bgcolor: 'rgba(0,0,0,0)',
               xaxis: {
                 showgrid: true,
-                gridcolor: 'hsla(var(--border), 0.5)',
+                gridcolor: CHART.grid,
                 zeroline: false,
-                tickfont: { color: 'hsl(var(--muted-foreground))' },
+                tickfont: { color: CHART.text },
                 tickprefix: 'R$ ',
               },
               yaxis: {
                 showgrid: false,
                 zeroline: false,
-                tickfont: { color: 'hsl(var(--muted-foreground))', size: 10 },
+                tickfont: { color: CHART.text, size: 10 },
                 automargin: true,
               },
             }}

@@ -1,5 +1,6 @@
 import Plot from 'react-plotly.js';
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { CHART } from "../../lib/chart-colors";
 
 interface CustomerMapProps {
   data: { zip: string; lat: number; lon: number; city: string; state: string; count: number }[];
@@ -16,8 +17,8 @@ export function CustomerMap({ data }: CustomerMapProps) {
       <CardHeader>
         <CardTitle>Customer Distribution (Heatmap)</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="h-[250px] sm:h-[300px] md:h-[350px] w-full">
+        <CardContent>
+          <div className="h-[250px] sm:h-[300px] md:h-[350px] w-full" role="img" aria-label="Customer distribution heatmap by state">
           <Plot
             data={[
               {
@@ -31,14 +32,17 @@ export function CustomerMap({ data }: CustomerMapProps) {
                   sizemode: 'area',
                   sizeref: 2.0 * Math.max(...counts) / (20**2), // Adjusted size reference
                   color: counts,
-                  colorscale: 'Oranges',
+                  colorscale: [
+                    [0, CHART.paper3],
+                    [1, CHART.accent],
+                  ] as [number, string][],
                   showscale: true,
                   opacity: 0.7,
                   colorbar: {
-                    title: { text: 'Customers', font: { color: 'hsl(var(--muted-foreground))' } },
+                    title: { text: 'Customers', font: { color: CHART.text } },
                     thickness: 10,
                     len: 0.8,
-                    tickfont: { color: 'hsl(var(--muted-foreground))' },
+                    tickfont: { color: CHART.text },
                   },
                 },
               },
@@ -53,9 +57,9 @@ export function CustomerMap({ data }: CustomerMapProps) {
                 scope: 'south america',
                 resolution: 50,
                 showland: true,
-                landcolor: 'hsla(var(--muted), 0.2)',
-                countrycolor: 'hsla(var(--border), 0.5)',
-                coastlinecolor: 'hsla(var(--border), 0.5)',
+                landcolor: CHART.paper3,
+                countrycolor: CHART.rule2,
+                coastlinecolor: CHART.rule2,
                 projection: { type: 'mercator' },
                 center: { lat: -15, lon: -55 },
                 lataxis: { range: [-35, 5] },

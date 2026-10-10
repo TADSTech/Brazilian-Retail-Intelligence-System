@@ -2,6 +2,7 @@ import { CategoryChart } from '../category-chart';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../ui/table';
 import Plot from 'react-plotly.js';
+import { CHART } from '../../../lib/chart-colors';
 
 interface ProductsTabProps {
   data: any;
@@ -96,10 +97,10 @@ export function ProductsTab({ data }: ProductsTabProps) {
         <Card>
           <CardHeader>
             <CardTitle>Category Performance</CardTitle>
-            <CardDescription>Order count by product category</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[350px]">
+              <CardDescription>Order count by product category</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[350px]" role="img" aria-label="Order count by product category chart">
               <Plot
                 data={[
                   {
@@ -107,7 +108,7 @@ export function ProductsTab({ data }: ProductsTabProps) {
                     y: productPerformance.categoryPerformance.map((c: any) => c.category),
                     type: 'bar',
                     orientation: 'h',
-                    marker: { color: '#ea580c' }
+                    marker: { color: CHART.accent }
                   }
                 ]}
                 layout={{
@@ -116,12 +117,12 @@ export function ProductsTab({ data }: ProductsTabProps) {
                   paper_bgcolor: 'rgba(0,0,0,0)',
                   plot_bgcolor: 'rgba(0,0,0,0)',
                   xaxis: {
-                    color: 'hsl(var(--muted-foreground))',
-                    gridcolor: 'hsla(var(--border), 0.3)',
+                    color: CHART.text,
+                    gridcolor: CHART.grid,
                     title: { text: 'Number of Orders' }
                   },
                   yaxis: {
-                    color: 'hsl(var(--muted-foreground))',
+                    color: CHART.text,
                     automargin: true
                   }
                 }}
@@ -135,10 +136,10 @@ export function ProductsTab({ data }: ProductsTabProps) {
         <Card>
           <CardHeader>
             <CardTitle>Sales Concentration</CardTitle>
-            <CardDescription>Pareto analysis (80/20 rule)</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[350px]">
+              <CardDescription>Pareto analysis (80/20 rule)</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[350px]" role="img" aria-label="Pareto analysis chart">
               <Plot
                 data={[
                   {
@@ -146,7 +147,7 @@ export function ProductsTab({ data }: ProductsTabProps) {
                     y: productPerformance.salesConcentration.map((s: any) => s.cumulative_percentage),
                     type: 'scatter',
                     mode: 'lines+markers',
-                    line: { color: '#ea580c', width: 2 },
+                    line: { color: CHART.accent, width: 2 },
                     marker: { size: 6 },
                     name: 'Cumulative %'
                   }
@@ -157,13 +158,13 @@ export function ProductsTab({ data }: ProductsTabProps) {
                   paper_bgcolor: 'rgba(0,0,0,0)',
                   plot_bgcolor: 'rgba(0,0,0,0)',
                   xaxis: {
-                    color: 'hsl(var(--muted-foreground))',
-                    gridcolor: 'hsla(var(--border), 0.3)',
+                    color: CHART.text,
+                    gridcolor: CHART.grid,
                     title: { text: 'Product Rank' }
                   },
                   yaxis: {
-                    color: 'hsl(var(--muted-foreground))',
-                    gridcolor: 'hsla(var(--border), 0.3)',
+                    color: CHART.text,
+                    gridcolor: CHART.grid,
                     title: { text: 'Cumulative Revenue %' },
                     range: [0, 100]
                   },
@@ -175,7 +176,7 @@ export function ProductsTab({ data }: ProductsTabProps) {
                       y0: 80,
                       y1: 80,
                       line: {
-                        color: 'rgba(255, 99, 71, 0.5)',
+                        color: 'rgba(92, 100, 111, 0.5)',
                         width: 2,
                         dash: 'dash'
                       }
@@ -188,7 +189,7 @@ export function ProductsTab({ data }: ProductsTabProps) {
                       text: '80% Revenue Line',
                       showarrow: false,
                       yshift: 10,
-                      font: { color: 'hsl(var(--muted-foreground))' }
+                      font: { color: CHART.text }
                     }
                   ]
                 }}

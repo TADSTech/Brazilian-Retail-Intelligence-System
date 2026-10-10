@@ -1,5 +1,6 @@
 import Plot from 'react-plotly.js';
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { CHART } from "../../lib/chart-colors";
 
 interface RevenueChartProps {
   data: { date: string; revenue: number }[];
@@ -15,8 +16,8 @@ export function RevenueChart({ data }: RevenueChartProps) {
       <CardHeader>
         <CardTitle>Revenue Trend</CardTitle>
       </CardHeader>
-      <CardContent className="pl-2">
-        <div className="h-[250px] sm:h-[300px] md:h-[350px] w-full">
+        <CardContent className="pl-2">
+          <div className="h-[250px] sm:h-[300px] md:h-[350px] w-full" role="img" aria-label="Revenue trend over time">
           <Plot
             data={[
               {
@@ -24,10 +25,10 @@ export function RevenueChart({ data }: RevenueChartProps) {
                 y: revenues,
                 type: 'scatter',
                 mode: 'lines+markers',
-                marker: { color: '#ea580c' },
-                line: { shape: 'spline', color: '#ea580c' },
+                marker: { color: CHART.accent },
+                line: { shape: 'spline', color: CHART.accent },
                 fill: 'tozeroy',
-                fillcolor: 'rgba(234, 88, 12, 0.1)',
+                fillcolor: CHART.accentSoft,
               },
             ]}
             layout={{
@@ -39,13 +40,13 @@ export function RevenueChart({ data }: RevenueChartProps) {
               xaxis: {
                 showgrid: false,
                 zeroline: false,
-                tickfont: { color: 'hsl(var(--muted-foreground))' },
+                tickfont: { color: CHART.text },
               },
               yaxis: {
                 showgrid: true,
-                gridcolor: 'hsla(var(--border), 0.5)',
+                gridcolor: CHART.grid,
                 zeroline: false,
-                tickfont: { color: 'hsl(var(--muted-foreground))' },
+                tickfont: { color: CHART.text },
                 tickprefix: 'R$ ',
               },
             }}

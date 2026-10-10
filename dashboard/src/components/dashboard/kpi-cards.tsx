@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { DollarSign, ShoppingBag, Users, TrendingUp } from "lucide-react";
+import { useCountUp } from "../../hooks/use-count-up";
 
 interface KPICardsProps {
   kpis: {
@@ -11,6 +12,11 @@ interface KPICardsProps {
 }
 
 export function KPICards({ kpis }: KPICardsProps) {
+  const revenue = useCountUp(kpis.totalRevenue);
+  const orders = useCountUp(kpis.totalOrders);
+  const customers = useCountUp(kpis.uniqueCustomers);
+  const avgValue = useCountUp(kpis.avgOrderValue);
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -22,75 +28,52 @@ export function KPICards({ kpis }: KPICardsProps) {
     return new Intl.NumberFormat('pt-BR').format(value);
   };
 
+  const tiles = [
+    {
+      title: 'Total Revenue',
+      value: formatCurrency(revenue),
+      note: 'order_items: price + freight',
+      Icon: DollarSign,
+    },
+    {
+      title: 'Delivered Orders',
+      value: formatNumber(orders),
+      note: 'orders where status = delivered',
+      Icon: ShoppingBag,
+    },
+    {
+      title: 'Customers',
+      value: formatNumber(customers),
+      note: 'rows in the customers table',
+      Icon: Users,
+    },
+    {
+      title: 'Avg. Order Value',
+      value: formatCurrency(avgValue),
+      note: 'revenue ÷ delivered orders',
+      Icon: TrendingUp,
+    },
+  ];
+
   return (
-    <div className="grid gap-2 sm:gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
-            Total Revenue
-          </CardTitle>
-          <DollarSign className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">
-            {formatCurrency(kpis.totalRevenue)}
-          </div>
-          <p className="text-xs text-muted-foreground">
-            +20.1% from last month
-          </p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
-            Total Orders
-          </CardTitle>
-          <ShoppingBag className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">
-            {formatNumber(kpis.totalOrders)}
-          </div>
-          <p className="text-xs text-muted-foreground">
-            +180 since last hour
-          </p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
-            Unique Customers
-          </CardTitle>
-          <Users className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">
-            {formatNumber(kpis.uniqueCustomers)}
-          </div>
-          <p className="text-xs text-muted-foreground">
-            +19% new customers
-          </p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
-            Avg. Order Value
-          </CardTitle>
-          <TrendingUp className="h-4 w-4 text-muted-foreground" />
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">
-            {formatCurrency(kpis.avgOrderValue)}
-          </div>
-          <p className="text-xs text-muted-foreground">
-            +7% from last month
-          </p>
-        </CardContent>
-      </Card>
+    <div className="bento grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+      {tiles.map(({ title, value, note, Icon }) => (
+        <Card key={title} className="gap-3 rounded-none border-0 py-5 shadow-none">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 px-5 pb-0">
+            <CardTitle className="label">{title}</CardTitle>
+            <Icon className="size-4 text-primary" aria-hidden />
+          </CardHeader>
+          <CardContent className="px-5">
+            <div
+              className="tnum text-2xl font-medium tracking-[-0.02em]"
+              style={{ fontFamily: 'var(--font-display)' }}
+            >
+              {value}
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">{note}</p>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   );
 }

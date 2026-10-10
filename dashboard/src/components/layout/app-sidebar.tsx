@@ -1,5 +1,6 @@
-import { Home, LayoutDashboard, Users, Package, Settings, BarChart3, LogOut, Zap } from 'lucide-react'
+import { LayoutDashboard, Users, Package, Settings, BarChart3, LogOut, Zap } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
+import { BbiLogo } from '../bbi-logo'
 import {
   Sidebar,
   SidebarContent,
@@ -68,9 +69,9 @@ export function AppSidebar({ metrics, ...props }: AppSidebarProps) {
     }
   }
 
-  const revenueDisplay = metrics ? formatValue(metrics.revenue, '$') : '$8.2M';
-  const ordersDisplay = metrics ? formatValue(metrics.orders) : '97.6K';
-  const customersDisplay = metrics ? formatValue(metrics.customers) : '1.2M+';
+  const revenueDisplay = metrics ? formatValue(metrics.revenue, '$') : '—';
+  const ordersDisplay = metrics ? formatValue(metrics.orders) : '—';
+  const customersDisplay = metrics ? formatValue(metrics.customers) : '—';
 
   return (
     <Sidebar collapsible="icon" className="border-r border-border bg-sidebar" {...props}>
@@ -79,12 +80,13 @@ export function AppSidebar({ metrics, ...props }: AppSidebarProps) {
           <SidebarMenuItem>
             <Link to="/" className="w-full">
               <SidebarMenuButton size="lg" tooltip="BrazilBI" className="hover:bg-sidebar-accent transition-colors w-full group-data-[collapsible=icon]:justify-center">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shrink-0">
-                  <Home className="size-4" />
-                </div>
+                <BbiLogo className="size-8 shrink-0" />
                 <div className="flex flex-col gap-0.5 leading-none group-data-[collapsible=icon]:hidden">
-                  <span className="font-semibold text-sm text-sidebar-foreground">BrazilBI</span>
-                  <span className="text-xs text-muted-foreground">Retail Analytics</span>
+                  <span className="font-semibold text-sm text-sidebar-foreground">
+                    <span style={{ fontFamily: 'var(--font-display)' }}>Brazil</span>
+                    <span className="text-primary">BI</span>
+                  </span>
+                  <span className="label">Retail Analytics</span>
                 </div>
               </SidebarMenuButton>
             </Link>
@@ -94,7 +96,7 @@ export function AppSidebar({ metrics, ...props }: AppSidebarProps) {
       
       <SidebarContent className="px-2">
         <SidebarGroup>
-          <SidebarGroupLabel className="text-xs font-medium text-muted-foreground uppercase tracking-wide px-2">Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel className="label px-2">Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="gap-1">
               {menuItems.map((item) => {
@@ -131,23 +133,23 @@ export function AppSidebar({ metrics, ...props }: AppSidebarProps) {
         <div className="my-4 h-px bg-border mx-2" />
 
         <div className="px-2 pb-3 group-data-[collapsible=icon]:hidden">
-          <div className="bg-sidebar-accent/50 rounded-lg p-3 border border-sidebar-border">
-            <div className="flex items-center gap-2 mb-2">
-              <Zap className="size-4 text-primary" />
-              <p className="text-xs font-semibold text-sidebar-foreground">Key Metrics</p>
+          <div className="rounded-[10px] border border-sidebar-border bg-sidebar-accent/50 p-3">
+            <div className="mb-2 flex items-center gap-2">
+              <Zap className="size-4 text-primary" aria-hidden />
+              <p className="label">Live metrics</p>
             </div>
             <div className="space-y-2 text-xs">
-              <div className="flex justify-between">
+              <div className="flex justify-between gap-3">
                 <span className="text-muted-foreground">Revenue</span>
-                <span className="font-semibold text-sidebar-foreground">{revenueDisplay}</span>
+                <span className="tnum font-semibold text-sidebar-foreground">{revenueDisplay}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between gap-3">
                 <span className="text-muted-foreground">Orders</span>
-                <span className="font-semibold text-sidebar-foreground">{ordersDisplay}</span>
+                <span className="tnum font-semibold text-sidebar-foreground">{ordersDisplay}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between gap-3">
                 <span className="text-muted-foreground">Customers</span>
-                <span className="font-semibold text-sidebar-foreground">{customersDisplay}</span>
+                <span className="tnum font-semibold text-sidebar-foreground">{customersDisplay}</span>
               </div>
             </div>
           </div>

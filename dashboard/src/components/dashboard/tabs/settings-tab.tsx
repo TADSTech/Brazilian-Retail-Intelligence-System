@@ -1,54 +1,76 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
-import { Label } from '../../ui/label';
-import { Switch } from '../../ui/switch';
-import { Button } from '../../ui/button';
-import { useTheme } from '../../theme-provider';
+
+const DATASET_TABLES: [string, string][] = [
+  ['geolocation', '738,332'],
+  ['order_items', '112,650'],
+  ['order_payments', '103,886'],
+  ['orders', '99,441'],
+  ['customers', '99,441'],
+  ['order_reviews', '98,167'],
+  ['products', '32,951'],
+  ['sellers', '3,095'],
+];
 
 export function SettingsTab() {
-  const { theme, setTheme } = useTheme();
-
   return (
     <div className="space-y-4">
-      <Card>
-        <CardHeader>
-          <CardTitle>Appearance</CardTitle>
-          <CardDescription>Customize the look and feel of the dashboard.</CardDescription>
+      <Card className="gap-4 rounded-[10px] py-5 shadow-none">
+        <CardHeader className="px-5">
+          <CardTitle className="text-base" style={{ fontFamily: 'var(--font-display)' }}>
+            Dataset
+          </CardTitle>
+          <CardDescription>
+            Olist public Brazilian e-commerce dataset (Kaggle, 2016–2018) — 1,287,963 rows loaded across 8 tables.
+          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between space-x-2">
-            <Label htmlFor="dark-mode" className="flex flex-col space-y-1">
-              <span>Dark Mode</span>
-              <span className="font-normal leading-snug text-muted-foreground">
-                Switch between light and dark themes.
-              </span>
-            </Label>
-            <Switch 
-              id="dark-mode" 
-              checked={theme === 'dark'}
-              onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
-            />
-          </div>
+        <CardContent className="px-5">
+          <dl className="grid grid-cols-1 gap-x-8 sm:grid-cols-2">
+            {DATASET_TABLES.map(([table, rows]) => (
+              <div
+                key={table}
+                className="flex items-baseline justify-between gap-3 border-b border-border py-2 last:border-b-0"
+              >
+                <dt className="mono text-sm text-ink-2">{table}</dt>
+                <dd className="tnum text-sm font-medium">{rows}</dd>
+              </div>
+            ))}
+          </dl>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Data Refresh</CardTitle>
-          <CardDescription>Manage how often the dashboard data updates.</CardDescription>
+      <Card className="gap-4 rounded-[10px] py-5 shadow-none">
+        <CardHeader className="px-5">
+          <CardTitle className="text-base" style={{ fontFamily: 'var(--font-display)' }}>
+            Project
+          </CardTitle>
+          <CardDescription>Repository facts, current as of 2026-10-10.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between space-x-2">
-            <Label htmlFor="auto-refresh" className="flex flex-col space-y-1">
-              <span>Auto Refresh</span>
-              <span className="font-normal leading-snug text-muted-foreground">
-                Automatically refresh data every 5 minutes.
-              </span>
-            </Label>
-            <Switch id="auto-refresh" defaultChecked />
-          </div>
-          <Button variant="outline" className="w-full sm:w-auto">
-            Clear Cache
-          </Button>
+        <CardContent className="px-5">
+          <ul className="flex flex-wrap gap-2">
+            <li className="chip">3 API endpoints</li>
+            <li className="chip">23 tests passing</li>
+            <li className="chip">2 load backends</li>
+            <li className="chip">
+              <a
+                href="https://github.com/TADSTech/Brazilian-Retail-Intelligence-System"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="link-grow"
+              >
+                Source
+              </a>
+            </li>
+            <li className="chip">
+              <a
+                href="https://github.com/TADSTech/Brazilian-Retail-Intelligence-System/tree/main/docs"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="link-grow"
+              >
+                Docs
+              </a>
+            </li>
+          </ul>
         </CardContent>
       </Card>
     </div>

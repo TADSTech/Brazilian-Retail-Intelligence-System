@@ -12,7 +12,7 @@ import { SettingsTab } from '../components/dashboard/tabs/settings-tab';
 import { OverviewTabSkeleton, AnalyticsTabSkeleton, CustomersTabSkeleton, ProductsTabSkeleton } from '../components/dashboard/skeleton-loaders';
 
 export function Dashboard() {
-  const { data, loading, error } = useDashboardData();
+  const { data, loading, error, retry } = useDashboardData();
   const [searchParams] = useSearchParams();
   const tab = searchParams.get('tab') || 'overview';
 
@@ -58,14 +58,20 @@ export function Dashboard() {
 
   return (
     <SidebarProvider>
+      <a
+        href="#dashboard-main"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-[6px] focus:border focus:border-border focus:bg-background focus:px-4 focus:py-2 focus:text-sm"
+      >
+        Skip to content
+      </a>
       <AppSidebar metrics={data?.kpis?.totalRevenue ? {
         revenue: data.kpis.totalRevenue,
         orders: data.kpis.totalOrders,
         customers: data.kpis.uniqueCustomers
       } : undefined} />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 bg-background">
-          <SidebarTrigger className="-ml-1" />
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border px-4 bg-background">
+          <SidebarTrigger className="-ml-1" aria-label="Toggle sidebar" />
           <Separator orientation="vertical" className="mr-2 h-4" />
           <Breadcrumb>
             <BreadcrumbList>
@@ -87,9 +93,12 @@ export function Dashboard() {
             </BreadcrumbList>
           </Breadcrumb>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0 bg-muted/20">
-          <div className="flex items-center justify-between py-4">
-            <h1 className="text-3xl font-bold tracking-tight text-foreground">{getTitle()}</h1>
+        <div id="dashboard-main" className="flex flex-1 flex-col gap-4 p-4 bg-background">
+          <div className="flex flex-col gap-1 pt-2">
+            <p className="label">Olist dataset · 2016–2018</p>
+            <h1 className="text-2xl font-semibold tracking-[-0.02em]" style={{ fontFamily: 'var(--font-display)' }}>
+              {getTitle()}
+            </h1>
           </div>
 
           {loading ? (
@@ -97,11 +106,19 @@ export function Dashboard() {
               {renderSkeleton()}
             </div>
           ) : error ? (
-            <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-4 text-destructive">
-              Error loading dashboard data: {error}
+            <div className="flex flex-col items-start gap-3 rounded-[10px] border border-destructive/40 bg-destructive/5 p-4" role="alert">
+              <div>
+                <p className="text-sm font-medium text-destructive">Dashboard data unavailable</p>
+                <p className="mono mt-1 break-all text-xs text-muted-foreground">{error}</p>
+              </div>
+              <button type="button" className="btn btn-outline" onClick={retry}>
+                Retry
+              </button>
             </div>
           ) : (
-            renderTab()
+            <div key={tab} className="tab-panel">
+              {renderTab()}
+            </div>
           )}
         </div>
       </SidebarInset>

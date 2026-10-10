@@ -1,0 +1,68 @@
+/* Hallmark · genre: modern-minimal · macrostructure: Stat-Led (marketing) / Bento Grid (app)
+ * theme: Cobalt · design-system: design.md · designed-as-app
+ * paper oklch(98.5% 0.004 250) · accent oklch(56% 0.20 256) cool light · grotesk-sans display
+ * display: Space Grotesk 500/600 · body: Inter 400/500 · mono: JetBrains Mono 400/500
+ * six-axis: P5 H5 E5 S5 R4 V5 · gates: contrast 40–41 pass (29/29 pairs) · tokens 48 pass
+ * honest 46 pass · rendered pass (Playwright: 34/44b/49, no h-scroll, no wrap, 320–1920)
+ */
+:root {
+  /* paper / ink */
+  --color-paper:        oklch(98.5% 0.004 250);
+  --color-paper-2:      oklch(96.8% 0.006 250);
+  --color-paper-3:      oklch(94.5% 0.008 250);
+  --color-ink:          oklch(24% 0.02 258);
+  --color-ink-2:        oklch(34% 0.018 257);
+  --color-muted:        oklch(50% 0.02 257);
+  --color-rule:         oklch(91% 0.005 250);
+  --color-rule-2:       oklch(86.5% 0.007 250);
+  --color-rule-strong:  oklch(62% 0.012 252);
+
+  /* the one signal */
+  --color-accent:        oklch(56% 0.20 256);
+  --color-accent-ink:    oklch(98.5% 0.004 250);
+  --color-accent-on-dark: oklch(74% 0.14 256);
+  --color-focus:         oklch(56% 0.20 256);
+
+  /* graphite (code card + the one dark band) */
+  --color-graphite:      oklch(22% 0.016 260);
+  --color-graphite-2:    oklch(20% 0.016 260);
+  --color-graphite-ink:  oklch(92% 0.01 250);
+  --color-graphite-muted: oklch(65% 0.02 258);
+
+  /* status */
+  --color-error:   oklch(55% 0.19 25);
+  --color-success: oklch(61% 0.13 155);
+
+  /* data-viz (accent family + cool neutrals) */
+  --color-chart-1: oklch(56% 0.20 256);
+  --color-chart-2: oklch(44% 0.11 262);
+  --color-chart-3: oklch(72% 0.13 238);
+  --color-chart-4: oklch(62% 0.13 295);
+  --color-chart-5: oklch(55% 0.03 255);
+
+  /* type */
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-body:    "Inter", system-ui, sans-serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, monospace;
+
+  /* 4pt spacing */
+  --space-3xs: 0.25rem;  --space-2xs: 0.5rem;  --space-xs: 0.75rem;
+  --space-sm:  1rem;     --space-md:  1.5rem;  --space-lg: 2rem;
+  --space-xl:  3rem;     --space-2xl: 4.5rem;  --space-3xl: 7rem;
+
+  /* text scale */
+  --text-xs: 0.75rem;   --text-sm: 0.875rem;  --text-md: 1.125rem;
+  --text-lg: 1.375rem;  --text-xl: 1.75rem;   --text-2xl: 2.25rem;
+  --text-display: clamp(2.5rem, 5vw + 1rem, 4rem);
+  --text-figure:  clamp(3.5rem, 11vw, 8.5rem);
+
+  /* motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 150ms; --dur-mid: 250ms; --dur-slow: 600ms;
+
+  /* geometry */
+  --radius-control: 6px;
+  --radius-card: 10px;
+}

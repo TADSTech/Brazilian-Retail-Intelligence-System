@@ -1,13 +1,14 @@
 import { CustomerMap } from '../customer-map';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
 import Plot from 'react-plotly.js';
+import { CHART } from '../../../lib/chart-colors';
 
 interface CustomersTabProps {
   data: any;
 }
 
 export function CustomersTab({ data }: CustomersTabProps) {
-  const { customerGeo, customerBehavior, customerSatisfaction } = data;
+  const { customerGeo, topCustomerCities, customerBehavior, customerSatisfaction } = data;
 
   return (
     <div className="space-y-4">
@@ -21,8 +22,8 @@ export function CustomersTab({ data }: CustomersTabProps) {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {customerGeo.slice(0, 10).map((item: any, index: number) => (
-                <div key={item.zip} className="flex items-center">
+              {topCustomerCities.map((item: { city: string; state: string; count: number }, index: number) => (
+                <div key={`${item.city}, ${item.state}`} className="flex items-center">
                   <div className="w-8 font-medium text-muted-foreground">{index + 1}</div>
                   <div className="flex-1 font-medium">{item.city}, {item.state}</div>
                   <div className="text-muted-foreground">{item.count.toLocaleString()} customers</div>
@@ -72,10 +73,10 @@ export function CustomersTab({ data }: CustomersTabProps) {
       <Card>
         <CardHeader>
           <CardTitle>Customer Acquisition Trends</CardTitle>
-          <CardDescription>New vs returning customers over time</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[300px]">
+            <CardDescription>New vs returning customers over time</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px]" role="img" aria-label="New vs returning customers over time chart">
             <Plot
               data={[
                 {
@@ -84,7 +85,7 @@ export function CustomersTab({ data }: CustomersTabProps) {
                   name: 'New Customers',
                   type: 'scatter',
                   mode: 'lines+markers',
-                  line: { color: '#ea580c', width: 2 },
+                  line: { color: CHART.accent, width: 2 },
                   marker: { size: 6 }
                 },
                 {
@@ -93,7 +94,7 @@ export function CustomersTab({ data }: CustomersTabProps) {
                   name: 'Returning Customers',
                   type: 'scatter',
                   mode: 'lines+markers',
-                  line: { color: '#0ea5e9', width: 2 },
+                  line: { color: CHART.chart3, width: 2 },
                   marker: { size: 6 }
                 }
               ]}
@@ -103,16 +104,16 @@ export function CustomersTab({ data }: CustomersTabProps) {
                 paper_bgcolor: 'rgba(0,0,0,0)',
                 plot_bgcolor: 'rgba(0,0,0,0)',
                 xaxis: {
-                  color: 'hsl(var(--muted-foreground))',
-                  gridcolor: 'hsla(var(--border), 0.3)',
+                  color: CHART.text,
+                  gridcolor: CHART.grid,
                 },
                 yaxis: {
-                  color: 'hsl(var(--muted-foreground))',
-                  gridcolor: 'hsla(var(--border), 0.3)',
+                  color: CHART.text,
+                  gridcolor: CHART.grid,
                   title: { text: 'Number of Customers' }
                 },
                 legend: {
-                  font: { color: 'hsl(var(--muted-foreground))' },
+                  font: { color: CHART.text },
                   orientation: 'h',
                   y: 1.1
                 },
@@ -129,17 +130,17 @@ export function CustomersTab({ data }: CustomersTabProps) {
         <Card>
           <CardHeader>
             <CardTitle>Review Score Distribution</CardTitle>
-            <CardDescription>Breakdown of customer ratings</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
+              <CardDescription>Breakdown of customer ratings</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px]" role="img" aria-label="Breakdown of customer ratings chart">
               <Plot
                 data={[
                   {
                     x: customerSatisfaction.scoreDistribution.map((d: any) => `${d.score} Stars`),
                     y: customerSatisfaction.scoreDistribution.map((d: any) => d.count),
                     type: 'bar',
-                    marker: { color: '#ea580c' }
+                    marker: { color: CHART.accent }
                   }
                 ]}
                 layout={{
@@ -148,12 +149,12 @@ export function CustomersTab({ data }: CustomersTabProps) {
                   paper_bgcolor: 'rgba(0,0,0,0)',
                   plot_bgcolor: 'rgba(0,0,0,0)',
                   xaxis: {
-                    color: 'hsl(var(--muted-foreground))',
-                    gridcolor: 'hsla(var(--border), 0.3)',
+                    color: CHART.text,
+                    gridcolor: CHART.grid,
                   },
                   yaxis: {
-                    color: 'hsl(var(--muted-foreground))',
-                    gridcolor: 'hsla(var(--border), 0.3)',
+                    color: CHART.text,
+                    gridcolor: CHART.grid,
                     title: { text: 'Number of Reviews' }
                   }
                 }}
@@ -167,17 +168,17 @@ export function CustomersTab({ data }: CustomersTabProps) {
         <Card>
           <CardHeader>
             <CardTitle>Delivery Impact on Satisfaction</CardTitle>
-            <CardDescription>Review scores by delivery status</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
+              <CardDescription>Review scores by delivery status</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px]" role="img" aria-label="Review scores by delivery status chart">
               <Plot
                 data={[
                   {
                     x: customerSatisfaction.deliveryCorrelation.map((d: any) => d.status),
                     y: customerSatisfaction.deliveryCorrelation.map((d: any) => d.avgScore),
                     type: 'bar',
-                    marker: { color: ['#22c55e', '#ef4444'] },
+                    marker: { color: [CHART.success, CHART.error] },
                     text: customerSatisfaction.deliveryCorrelation.map((d: any) => d.avgScore.toFixed(2)),
                     textposition: 'outside'
                   }
@@ -188,12 +189,12 @@ export function CustomersTab({ data }: CustomersTabProps) {
                   paper_bgcolor: 'rgba(0,0,0,0)',
                   plot_bgcolor: 'rgba(0,0,0,0)',
                   xaxis: {
-                    color: 'hsl(var(--muted-foreground))',
-                    gridcolor: 'hsla(var(--border), 0.3)',
+                    color: CHART.text,
+                    gridcolor: CHART.grid,
                   },
                   yaxis: {
-                    color: 'hsl(var(--muted-foreground))',
-                    gridcolor: 'hsla(var(--border), 0.3)',
+                    color: CHART.text,
+                    gridcolor: CHART.grid,
                     title: { text: 'Average Review Score' },
                     range: [0, 5]
                   }

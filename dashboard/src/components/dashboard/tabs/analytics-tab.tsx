@@ -3,6 +3,7 @@ import { OrderStatusChart } from '../order-status-chart';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
 import Plot from 'react-plotly.js';
 import { Package, Clock, CreditCard, Truck } from 'lucide-react';
+import { CHART } from '../../../lib/chart-colors';
 
 interface AnalyticsTabProps {
   data: any;
@@ -62,7 +63,7 @@ export function AnalyticsTab({ data }: AnalyticsTabProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Avg Installments</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
+            <Package className="h-4 w-4 text-muted-foreground" aria-hidden />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{analytics.avgInstallments.toFixed(1)}x</div>
@@ -81,10 +82,10 @@ export function AnalyticsTab({ data }: AnalyticsTabProps) {
         <Card>
           <CardHeader>
             <CardTitle>Payment Methods</CardTitle>
-            <CardDescription>Distribution by transaction count</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
+              <CardDescription>Distribution by transaction count</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px]" role="img" aria-label="Distribution by transaction count chart">
               <Plot
                 data={[
                   {
@@ -92,7 +93,7 @@ export function AnalyticsTab({ data }: AnalyticsTabProps) {
                     labels: analytics.paymentMethods.map((p: any) => p.type),
                     type: 'pie',
                     marker: {
-                      colors: ['#ea580c', '#fb923c', '#fdba74', '#fed7aa']
+                      colors: [CHART.accent, CHART.chart3, CHART.chart4, CHART.chart5]
                     },
                     textinfo: 'label+percent',
                     textposition: 'outside',
@@ -106,7 +107,7 @@ export function AnalyticsTab({ data }: AnalyticsTabProps) {
                   plot_bgcolor: 'rgba(0,0,0,0)',
                   showlegend: false,
                   font: {
-                    color: 'hsl(var(--muted-foreground))'
+                    color: CHART.text
                   }
                 }}
                 config={{ displayModeBar: false }}
@@ -121,17 +122,17 @@ export function AnalyticsTab({ data }: AnalyticsTabProps) {
         <Card>
           <CardHeader>
             <CardTitle>Delivery Lead Time</CardTitle>
-            <CardDescription>Order distribution by delivery time</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
+              <CardDescription>Order distribution by delivery time</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px]" role="img" aria-label="Order distribution by delivery time chart">
               <Plot
                 data={[
                   {
                     x: analytics.deliveryDistribution.map((d: any) => d.range),
                     y: analytics.deliveryDistribution.map((d: any) => d.count),
                     type: 'bar',
-                    marker: { color: '#ea580c' }
+                    marker: { color: CHART.accent }
                   }
                 ]}
                 layout={{
@@ -140,12 +141,12 @@ export function AnalyticsTab({ data }: AnalyticsTabProps) {
                   paper_bgcolor: 'rgba(0,0,0,0)',
                   plot_bgcolor: 'rgba(0,0,0,0)',
                   xaxis: {
-                    color: 'hsl(var(--muted-foreground))',
-                    gridcolor: 'hsla(var(--border), 0.3)',
+                    color: CHART.text,
+                    gridcolor: CHART.grid,
                   },
                   yaxis: {
-                    color: 'hsl(var(--muted-foreground))',
-                    gridcolor: 'hsla(var(--border), 0.3)',
+                    color: CHART.text,
+                    gridcolor: CHART.grid,
                     title: { text: 'Number of Orders' }
                   }
                 }}
@@ -159,17 +160,17 @@ export function AnalyticsTab({ data }: AnalyticsTabProps) {
         <Card>
           <CardHeader>
             <CardTitle>Payment Installments</CardTitle>
-            <CardDescription>Distribution of payment splits</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
+              <CardDescription>Distribution of payment splits</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px]" role="img" aria-label="Distribution of payment splits chart">
               <Plot
                 data={[
                   {
                     x: analytics.installmentDistribution.map((i: any) => `${i.installments}x`),
                     y: analytics.installmentDistribution.map((i: any) => i.count),
                     type: 'bar',
-                    marker: { color: '#ea580c' }
+                    marker: { color: CHART.accent }
                   }
                 ]}
                 layout={{
@@ -178,12 +179,12 @@ export function AnalyticsTab({ data }: AnalyticsTabProps) {
                   paper_bgcolor: 'rgba(0,0,0,0)',
                   plot_bgcolor: 'rgba(0,0,0,0)',
                   xaxis: {
-                    color: 'hsl(var(--muted-foreground))',
-                    gridcolor: 'hsla(var(--border), 0.3)',
+                    color: CHART.text,
+                    gridcolor: CHART.grid,
                   },
                   yaxis: {
-                    color: 'hsl(var(--muted-foreground))',
-                    gridcolor: 'hsla(var(--border), 0.3)',
+                    color: CHART.text,
+                    gridcolor: CHART.grid,
                     title: { text: 'Number of Payments' }
                   }
                 }}
