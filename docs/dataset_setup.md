@@ -1,12 +1,16 @@
 # Dataset Setup
 
-The pipeline needs the Olist CSVs in `data/` (gitignored). Two ways to get them.
+The pipeline needs the Olist CSVs in `data/` (the folder ships with the repo; the CSVs inside are gitignored). Two ways to get them.
 
 ## Option A: GitHub release
 
-1. Open the repository's [Releases](../../releases) page.
-2. Download the dataset archive.
-3. Extract the CSVs into `data/`.
+1. Open the repository's [Releases](../../releases) page and download `brazilian-ecommerce.zip`.
+2. Extract into `data/` — the zip holds the CSVs at its root (no `data/` folder inside):
+
+   ```bash
+   unzip brazilian-ecommerce.zip -d data/        # macOS/Linux
+   # PowerShell: Expand-Archive brazilian-ecommerce.zip -DestinationPath data
+   ```
 
 ## Option B: Kaggle
 
@@ -41,7 +45,7 @@ Override the location with `DATA_DIR` if you store them elsewhere.
 
 ```bash
 ls data/
-# expect 9 CSV files
+# expect 9 CSV files (plus this README)
 ```
 
 ## Next

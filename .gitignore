@@ -1,4 +1,6 @@
-data/
+# Dataset — the folder ships with the repo, but its contents stay local
+data/*
+!data/README.md
 
 # Python
 __pycache__/
@@ -74,3 +76,8 @@ mdpdf.log
 
 # Unignore dashboard lib
 !dashboard/src/lib/
+# Tooling artifacts and run output
+.hallmark/
+*.err
+dashboard/dashboard_test_*.png
+
