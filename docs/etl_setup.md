@@ -1,94 +1,60 @@
-# ETL Setup Guide
+# ETL Setup
 
-This guide will help you set up and run the ETL pipeline for the BrazilRetail-BI project.
+Single pipeline in `etl/`. The load backend is a configuration choice, not a fork of the code.
 
-## Overview
+## Pipeline stages
 
-The project now supports two ETL environments:
-1. **Local ETL (`etl_local/`)**: Loads data into a local PostgreSQL database using SQLAlchemy.
-2. **Production ETL (`etl_prod/`)**: Loads data directly into Supabase using the Supabase Python client.
+1. **Extract** (`etl/extract.py`) — reads CSVs with an encoding fallback chain (`utf-8`, `latin1`, `cp1252`, `iso-8859-1`).
+2. **Transform** (`etl/transform/`) — one pure module per table: type casting, Brazilian state mapping, timezone removal, dedupe.
+3. **Load** (`etl/loaders.py`) — `SupabaseLoader` (batched REST upsert, 1000 rows per call) or `PostgresLoader` (SQLAlchemy bulk insert, optional truncate).
 
-## Prerequisites
+## Backends
 
-- Python 3.8+
-- PostgreSQL database (for Local ETL)
-- Supabase project (for Production ETL)
-- Dataset downloaded (see dataset_setup.md)
+Set `ETL_BACKEND` in `.env`:
 
-## Step 1: Install Dependencies
+- `supabase` (default) — needs `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`
+- `postgres` — needs `DATABASE_URL`
 
-Install the required Python packages:
+## Commands
 
 ```bash
-pip install -r requirements.txt
-pip install supabase  # Required for Production ETL
+python -m etl                          # all eight tables
+python -m etl --tables orders order_items
+python -m etl --full-reload            # postgres only: truncate first
+python -m etl --data-dir /path/to/csvs # override DATA_DIR
 ```
 
-## Step 2: Configure Environment
+Via API:
 
-Update the `.env` file with your credentials:
-
-```env
-# For Local ETL
-DATABASE_URL=postgresql://your_username:your_password@localhost:5432/brazilretail_bi
-
-# For Production ETL
-SUPABASE_URL=https://your-project.supabase.co
-SUPERKEY=your-service-role-key
+```bash
+curl -X POST http://localhost:8000/etl/run \
+  -H "Content-Type: application/json" \
+  -d '{"full_reload": false, "tables": ["orders"]}'
 ```
 
-## Step 3: Run Local ETL
+## Source files
 
-1. Create the local database schema:
-   ```bash
-   python db_schema/create_schema.py
-   ```
+Expected in `data/` (or `DATA_DIR`):
 
-2. Setup constraints and indexes (Guardrails):
-   ```bash
-   python db_schema/setup_constraints.py
-   ```
+```text
+olist_customers_dataset.csv          geolocation_zip_code_prefix...
+olist_geolocation_dataset.csv
+olist_order_items_dataset.csv
+olist_order_payments_dataset.csv
+olist_order_reviews_dataset.csv
+olist_orders_dataset.csv
+olist_products_dataset.csv
+olist_sellers_dataset.csv
+product_category_name_translation.csv   # optional, enables English categories
+```
 
-3. Run the local ETL pipeline:
-   ```bash
-   python -m etl_local.main
-   ```
+Get them from the [GitHub release](../../releases) or Kaggle.
 
-## Step 4: Run Production ETL
+## Failure modes
 
-The production ETL loads data directly into Supabase and supports incremental updates.
-
-**Important:** Ensure your Supabase tables are created. You can run `db_schema/create_schema.py` with your Supabase `DATABASE_URL` set in `.env` if they don't exist.
-
-1. Setup constraints and indexes (Guardrails):
-   Ensure `DATABASE_URL` in `.env` points to your Supabase instance, then run:
-   ```bash
-   python db_schema/setup_constraints.py
-   ```
-
-2. Run full load (initial setup):
-   ```bash
-   python -m etl_prod.main --full-reload
-   ```
-
-3. Run incremental update (updates existing records and inserts new ones):
-   ```bash
-   python -m etl_prod.main --incremental
-   ```
-
-4. Update specific tables only:
-   ```bash
-   python -m etl_prod.main --incremental --tables orders order_items
-   ```
-
-## Troubleshooting
-
-- **Supabase errors**: Verify `SUPABASE_URL` and `SUPERKEY` in `.env`. Ensure the service key has bypass RLS permissions if needed (usually it does).
-- **Database connection errors**: Verify your `DATABASE_URL` in `.env` for local ETL.
-- **Missing data files**: Ensure all CSV files are in the `data/` directory.
-
-## Next Steps
-
-Once ETL is complete, you can:
-- Set up Metabase for dashboard creation
-- Run data analysis and create reports
+| Symptom | Fix |
+|---|---|
+| `Data directory not found` | Extract CSVs into `data/` or set `DATA_DIR` |
+| `SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set` | Fill in `.env` |
+| `Schema missing` (postgres) | `python -m db_schema.create_schema` |
+| Duplicate rows after re-run | Should not happen: Supabase path upserts on PK. Check for PK mismatches in transforms. |

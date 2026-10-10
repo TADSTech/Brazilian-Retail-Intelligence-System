@@ -1,0 +1,1 @@
+"""Synthetic order generation package."""

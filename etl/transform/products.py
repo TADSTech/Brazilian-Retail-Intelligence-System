@@ -1,55 +1,37 @@
-# Transform products script
+from __future__ import annotations
 
 import pandas as pd
-import os
 
-def transform_products(data: pd.DataFrame) -> pd.DataFrame:
-    """
-    Transform and clean the products dataset.
+from .common import finalize, load_category_translations
 
-    Arguments:
-        data (pd.DataFrame): The raw products data.
 
-    Returns:
-        pd.DataFrame: The transformed and cleaned products data.
-    """
-    # Convert data types
-    data.product_id = data.product_id.astype('string')
-    data.product_category_name = data.product_category_name.astype('string')
-    data.product_name_lenght = data.product_name_lenght.astype('Int64')
-    data.product_description_lenght = data.product_description_lenght.astype('Int64')
-    data.product_photos_qty = data.product_photos_qty.astype('Int64')
-    data.product_weight_g = data.product_weight_g.astype('Int64')
-    data.product_length_cm = data.product_length_cm.astype('Int64')
-    data.product_height_cm = data.product_height_cm.astype('Int64')
-    data.product_width_cm = data.product_width_cm.astype('Int64')
+def transform_products(
+    data: pd.DataFrame, data_dir: str | None = None
+) -> pd.DataFrame:
+    data = data.copy()
+    data["product_id"] = data["product_id"].astype("string")
+    data["product_category_name"] = data["product_category_name"].astype("string")
 
-    # Load product category translation
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    project_root = os.path.dirname(os.path.dirname(script_dir))
-    translation_path = os.path.join(project_root, 'data', 'product_category_name_translation.csv')
-    try:
-        translation_df = pd.read_csv(translation_path)
-        translation_dict = dict(zip(translation_df['product_category_name'], translation_df['product_category_name_english']))
-        
-        # Map Portuguese categories to English
-        data['product_category_name_english'] = data['product_category_name'].map(translation_dict)
-        
-        # Format English category names to be more presentable
-        def format_category_name(name):
-            if pd.isna(name) or not isinstance(name, str):
-                return name
-            return name.replace('_', ' ').title()
-        
-        data['product_category_name_english'] = data['product_category_name_english'].apply(format_category_name)
-    except FileNotFoundError:
-        print("Warning: Product category translation file not found. Skipping English translation.")
-        data['product_category_name_english'] = data['product_category_name']
+    int_cols = [
+        "product_name_lenght",
+        "product_description_lenght",
+        "product_photos_qty",
+        "product_weight_g",
+        "product_length_cm",
+        "product_height_cm",
+        "product_width_cm",
+    ]
+    for col in int_cols:
+        if col in data.columns:
+            data[col] = data[col].astype("Int64")
 
-    # Drop rows with more than 1 NaN value
-    data = data.dropna(thresh=len(data.columns) - 1)
+    translations = load_category_translations(data_dir) if data_dir else {}
+    if translations:
+        english = data["product_category_name"].map(translations)
+        data["product_category_name_english"] = english.apply(
+            lambda name: name.replace("_", " ").title() if isinstance(name, str) else name
+        )
+    else:
+        data["product_category_name_english"] = data["product_category_name"]
 
-    # Drop duplicate rows
-    data = data.drop_duplicates()
-
-    return data
+    return finalize(data)

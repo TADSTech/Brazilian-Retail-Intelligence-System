@@ -1,17 +1,20 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Build the Docker image
-echo "Building Docker image..."
-docker build -t brazil-retail-backend .
+IMAGE=brazil-retail-backend
+CONTAINER=brazil-retail-api
 
-# Run the Docker container
-# We mount the .env file to pass environment variables
-echo "Running Docker container..."
+echo "Building ${IMAGE}..."
+docker build -t "${IMAGE}" .
+
+echo "Starting ${CONTAINER} on :8000..."
+docker rm -f "${CONTAINER}" 2>/dev/null || true
 docker run -d \
-  --name brazil-retail-api \
+  --name "${CONTAINER}" \
   -p 8000:8000 \
   --env-file .env \
-  brazil-retail-backend
+  "${IMAGE}"
 
-echo "Container started. API available at http://localhost:8000"
+echo "API:  http://localhost:8000"
+echo "Docs: http://localhost:8000/docs"
 echo "Health check: http://localhost:8000/health"

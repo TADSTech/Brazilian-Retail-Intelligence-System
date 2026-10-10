@@ -1,17 +1,17 @@
-name: Hourly Order Generation
+name: Synthetic Order Generation
 
 on:
   schedule:
-    # Run every 14 minutes
-    - cron: '*/14 * * * *'
+    # Hourly synthetic traffic against the deployed API.
+    - cron: "0 * * * *"
   workflow_dispatch:
 
 jobs:
   trigger-order-gen:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Order Generation API
+      - name: Trigger order generation
         run: |
-          curl -X POST "${{ secrets.BACKEND_URL }}/orders/generate" \
-          -H "Content-Type: application/json" \
-          -d '{"count": 50}'
+          curl -fsS -X POST "${{ secrets.BACKEND_URL }}/orders/generate" \
+            -H "Content-Type: application/json" \
+            -d '{"count": 50}'

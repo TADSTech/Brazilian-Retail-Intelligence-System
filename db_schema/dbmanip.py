@@ -1,200 +1,75 @@
-import sys
-import os
+"""Bulk-load helpers for the local PostgreSQL schema.
 
-# Add project root to path for imports
-project_root = os.path.dirname(os.path.dirname(__file__))
-sys.path.insert(0, project_root)
+Prefer `etl.loaders.PostgresLoader` for new code; these functions remain
+for scripts that need per-table control.
+"""
 
-from sqlalchemy.orm import sessionmaker
+from __future__ import annotations
+
+import logging
+
+import pandas as pd
 from sqlalchemy import text
-from .create_schema import engine, Customer, Geolocation, OrderItem, OrderPayment, OrderReview, Order, Product, Seller
-from etl.utils import log_message, error_message, success_message
-from .create_schema import check_schema_created
+from sqlalchemy.orm import sessionmaker
 
-# Create session
+from .create_schema import check_schema_created
+from .models import MODELS, engine
+
+logger = logging.getLogger(__name__)
 Session = sessionmaker(bind=engine)
 
-def load_customers(df, full_reload=False):
-    """Load customers data into the database."""
+
+def load_table(table: str, df: pd.DataFrame, full_reload: bool = False) -> int:
+    """Insert one table's rows. Optionally truncate first (parent tables only)."""
     if not check_schema_created():
-        error_message("Database schema not created. Please run create_schema.py first.")
-        return
-    
+        raise RuntimeError("Schema missing. Run `python -m db_schema.create_schema` first.")
+    if table not in MODELS:
+        raise KeyError(f"Unknown table {table!r}. Known: {sorted(MODELS)}")
+
+    session = Session()
     try:
-        session = Session()
-        
         if full_reload:
-            # Truncate table for full reload
-            session.execute(text("TRUNCATE TABLE customers RESTART IDENTITY CASCADE;"))
-            success_message("Customers table truncated for full reload.")
-        
-        records = df.to_dict('records')
-        session.bulk_insert_mappings(Customer, records)
+            session.execute(text(f"TRUNCATE TABLE {table} RESTART IDENTITY CASCADE;"))
+        records = df.to_dict("records")
+        session.bulk_insert_mappings(MODELS[table], records)
         session.commit()
-        success_message(f"Loaded {len(records)} customer records.")
-    except Exception as e:
+        logger.info("Loaded %d rows into %s", len(records), table)
+        return len(records)
+    except Exception:
         session.rollback()
-        error_message(f"Failed to load customers: {e}")
+        logger.exception("Failed loading %s", table)
+        raise
     finally:
         session.close()
 
-def load_geolocation(df, full_reload=False):
-    """Load geolocation data into the database."""
-    if not check_schema_created():
-        error_message("Database schema not created. Please run create_schema.py first.")
-        return
-    
-    try:
-        session = Session()
-        
-        if full_reload:
-            session.execute(text("TRUNCATE TABLE geolocation RESTART IDENTITY CASCADE;"))
-            success_message("Geolocation table truncated for full reload.")
-        
-        records = df.to_dict('records')
-        session.bulk_insert_mappings(Geolocation, records)
-        session.commit()
-        success_message(f"Loaded {len(records)} geolocation records.")
-    except Exception as e:
-        session.rollback()
-        error_message(f"Failed to load geolocation: {e}")
-    finally:
-        session.close()
 
-def load_order_items(df, full_reload=False):
-    """Load order items data into the database."""
-    if not check_schema_created():
-        error_message("Database schema not created. Please run create_schema.py first.")
-        return
-    
-    try:
-        session = Session()
-        
-        if full_reload:
-            session.execute(text("TRUNCATE TABLE order_items RESTART IDENTITY CASCADE;"))
-            success_message("Order items table truncated for full reload.")
-        
-        records = df.to_dict('records')
-        session.bulk_insert_mappings(OrderItem, records)
-        session.commit()
-        success_message(f"Loaded {len(records)} order item records.")
-    except Exception as e:
-        session.rollback()
-        error_message(f"Failed to load order items: {e}")
-    finally:
-        session.close()
+def load_customers(df: pd.DataFrame, full_reload: bool = False) -> int:
+    return load_table("customers", df, full_reload)
 
-def load_order_payments(df, full_reload=False):
-    """Load order payments data into the database."""
-    if not check_schema_created():
-        error_message("Database schema not created. Please run create_schema.py first.")
-        return
-    
-    try:
-        session = Session()
-        
-        if full_reload:
-            session.execute(text("TRUNCATE TABLE order_payments RESTART IDENTITY CASCADE;"))
-            success_message("Order payments table truncated for full reload.")
-        
-        records = df.to_dict('records')
-        session.bulk_insert_mappings(OrderPayment, records)
-        session.commit()
-        success_message(f"Loaded {len(records)} order payment records.")
-    except Exception as e:
-        session.rollback()
-        error_message(f"Failed to load order payments: {e}")
-    finally:
-        session.close()
 
-def load_order_reviews(df, full_reload=False):
-    """Load order reviews data into the database."""
-    if not check_schema_created():
-        error_message("Database schema not created. Please run create_schema.py first.")
-        return
-    
-    try:
-        session = Session()
-        
-        if full_reload:
-            session.execute(text("TRUNCATE TABLE order_reviews RESTART IDENTITY CASCADE;"))
-            success_message("Order reviews table truncated for full reload.")
-        
-        records = df.to_dict('records')
-        session.bulk_insert_mappings(OrderReview, records)
-        session.commit()
-        success_message(f"Loaded {len(records)} order review records.")
-    except Exception as e:
-        session.rollback()
-        error_message(f"Failed to load order reviews: {e}")
-    finally:
-        session.close()
+def load_geolocation(df: pd.DataFrame, full_reload: bool = False) -> int:
+    return load_table("geolocation", df, full_reload)
 
-def load_orders(df, full_reload=False):
-    """Load orders data into the database."""
-    if not check_schema_created():
-        error_message("Database schema not created. Please run create_schema.py first.")
-        return
-    
-    try:
-        session = Session()
-        
-        if full_reload:
-            session.execute(text("TRUNCATE TABLE orders RESTART IDENTITY CASCADE;"))
-            success_message("Orders table truncated for full reload.")
-        
-        records = df.to_dict('records')
-        session.bulk_insert_mappings(Order, records)
-        session.commit()
-        success_message(f"Loaded {len(records)} order records.")
-    except Exception as e:
-        session.rollback()
-        error_message(f"Failed to load orders: {e}")
-    finally:
-        session.close()
 
-def load_products(df, full_reload=False):
-    """Load products data into the database."""
-    if not check_schema_created():
-        error_message("Database schema not created. Please run create_schema.py first.")
-        return
-    
-    try:
-        session = Session()
-        
-        if full_reload:
-            session.execute(text("TRUNCATE TABLE products RESTART IDENTITY CASCADE;"))
-            success_message("Products table truncated for full reload.")
-        
-        records = df.to_dict('records')
-        session.bulk_insert_mappings(Product, records)
-        session.commit()
-        success_message(f"Loaded {len(records)} product records.")
-    except Exception as e:
-        session.rollback()
-        error_message(f"Failed to load products: {e}")
-    finally:
-        session.close()
+def load_orders(df: pd.DataFrame, full_reload: bool = False) -> int:
+    return load_table("orders", df, full_reload)
 
-def load_sellers(df, full_reload=False):
-    """Load sellers data into the database."""
-    if not check_schema_created():
-        error_message("Database schema not created. Please run create_schema.py first.")
-        return
-    
-    try:
-        session = Session()
-        
-        if full_reload:
-            session.execute(text("TRUNCATE TABLE sellers RESTART IDENTITY CASCADE;"))
-            success_message("Sellers table truncated for full reload.")
-        
-        records = df.to_dict('records')
-        session.bulk_insert_mappings(Seller, records)
-        session.commit()
-        success_message(f"Loaded {len(records)} seller records.")
-    except Exception as e:
-        session.rollback()
-        error_message(f"Failed to load sellers: {e}")
-    finally:
-        session.close()
+
+def load_order_items(df: pd.DataFrame, full_reload: bool = False) -> int:
+    return load_table("order_items", df, full_reload)
+
+
+def load_order_payments(df: pd.DataFrame, full_reload: bool = False) -> int:
+    return load_table("order_payments", df, full_reload)
+
+
+def load_order_reviews(df: pd.DataFrame, full_reload: bool = False) -> int:
+    return load_table("order_reviews", df, full_reload)
+
+
+def load_products(df: pd.DataFrame, full_reload: bool = False) -> int:
+    return load_table("products", df, full_reload)
+
+
+def load_sellers(df: pd.DataFrame, full_reload: bool = False) -> int:
+    return load_table("sellers", df, full_reload)

@@ -3,6 +3,7 @@ Migration script to export data from PostgreSQL to CSV files and generate Supaba
 This script handles data extraction, cleaning, and preparation for Supabase migration.
 """
 
+import logging
 import os
 import sys
 import pandas as pd
@@ -11,12 +12,21 @@ from datetime import datetime
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import text, inspect
 
-# Add project root to path for imports
-project_root = os.path.dirname(os.path.dirname(__file__))
-sys.path.insert(0, project_root)
+from .models import Base, Customer, Geolocation, OrderItem, OrderPayment, OrderReview, Order, Product, Seller, engine
 
-from create_schema import engine, Base, Customer, Geolocation, OrderItem, OrderPayment, OrderReview, Order, Product, Seller
-from etl.utils import log_message, error_message, success_message
+logger = logging.getLogger(__name__)
+
+
+def log_message(message: str) -> None:
+    logger.info(message)
+
+
+def error_message(message: str) -> None:
+    logger.error(message)
+
+
+def success_message(message: str) -> None:
+    logger.info(message)
 
 # Create session
 Session = sessionmaker(bind=engine)

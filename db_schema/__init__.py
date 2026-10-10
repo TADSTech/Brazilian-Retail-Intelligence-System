@@ -1,1 +1,1 @@
-# Database Schema Package
+"""Database schema models, migrations, and constraint tooling."""

@@ -3,17 +3,26 @@ Validation script for migration files.
 Verifies CSVs are clean and SQL scripts are valid before migration to Supabase.
 """
 
+import logging
 import os
 import sys
 from pathlib import Path
 import pandas as pd
 from sqlalchemy import create_engine, text
 
-# Add project root to path for imports
-project_root = os.path.dirname(os.path.dirname(__file__))
-sys.path.insert(0, project_root)
+logger = logging.getLogger(__name__)
 
-from etl.utils import log_message, error_message, success_message
+
+def log_message(message: str) -> None:
+    logger.info(message)
+
+
+def error_message(message: str) -> None:
+    logger.error(message)
+
+
+def success_message(message: str) -> None:
+    logger.info(message)
 
 MIGRATION_DIR = Path(__file__).parent / "migrations"
 

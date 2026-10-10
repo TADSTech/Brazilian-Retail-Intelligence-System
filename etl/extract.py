@@ -1,49 +1,37 @@
+"""CSV extraction with encoding fallbacks."""
+
+from __future__ import annotations
+
+import logging
+from pathlib import Path
+
 import pandas as pd
-import os
-from .utils import error_message
 
-def extract_data(file_path: str) -> pd.DataFrame:
-    """
-    Robust data extraction function.
-    Reads data from a CSV file, trying different encodings if necessary.
-    Arguments:
-        file_path (str): The path to the CSV file.
+logger = logging.getLogger(__name__)
 
-    Returns:
-        pd.DataFrame: The extracted data as a DataFrame.
-    """
+ENCODINGS = ("utf-8", "latin1", "cp1252", "iso-8859-1")
 
-    # File checks
-    if not file_path.endswith('.csv'):
-        raise ValueError("Only CSV files are supported for extraction.")
 
-    if not os.path.exists(file_path):
-        raise FileNotFoundError(f"File not found: {file_path}")
-    
-    # List of encodings to try
-    encodings = ['utf-8', 'latin1', 'cp1252', 'iso-8859-1']
-    
-    df = None
-    for encoding in encodings:
+def extract_csv(path: str | Path) -> pd.DataFrame:
+    """Read a CSV file, trying several encodings until one decodes cleanly."""
+    path = Path(path)
+    if path.suffix.lower() != ".csv":
+        raise ValueError(f"Only CSV files are supported, got: {path.suffix or path.name}")
+    if not path.exists():
+        raise FileNotFoundError(f"File not found: {path}")
+
+    last_error: Exception | None = None
+    for encoding in ENCODINGS:
         try:
-            df = pd.read_csv(file_path, encoding=encoding)
-            break
-        except UnicodeDecodeError:
+            df = pd.read_csv(path, encoding=encoding)
+        except UnicodeDecodeError as exc:
+            last_error = exc
             continue
-        except Exception as e:
-            error_message(f"Error reading file with encoding {encoding}: {e}")
-            continue
-    
-    if df is None:
-        error_message(f"Failed to read the file {file_path} with any of the attempted encodings.")
-        return pd.DataFrame()
-    
-    if df.empty:
-        error_message(f"The file at {file_path} is empty.")
-        return pd.DataFrame()
-    
-    if df.shape[1] == 0:
-        error_message(f"The file at {file_path} has no columns.")
-        return pd.DataFrame()
-    
-    return df
+
+        if df.empty:
+            logger.warning("%s is empty", path.name)
+        elif df.shape[1] == 0:
+            logger.warning("%s has no columns", path.name)
+        return df
+
+    raise UnicodeError(f"Could not decode {path} with encodings {ENCODINGS}: {last_error}")

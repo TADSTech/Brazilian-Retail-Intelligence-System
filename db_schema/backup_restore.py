@@ -3,6 +3,7 @@ Backup and restore utilities for database operations.
 Supports incremental backups, full dumps, and recovery procedures.
 """
 
+import logging
 import os
 import sys
 import subprocess
@@ -12,12 +13,21 @@ from datetime import datetime
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import text
 
-# Add project root to path for imports
-project_root = os.path.dirname(os.path.dirname(__file__))
-sys.path.insert(0, project_root)
+from .models import engine
 
-from create_schema import engine
-from etl.utils import log_message, error_message, success_message
+logger = logging.getLogger(__name__)
+
+
+def log_message(message: str) -> None:
+    logger.info(message)
+
+
+def error_message(message: str) -> None:
+    logger.error(message)
+
+
+def success_message(message: str) -> None:
+    logger.info(message)
 
 BACKUP_DIR = Path(__file__).parent / "backups"
 BACKUP_DIR.mkdir(exist_ok=True)

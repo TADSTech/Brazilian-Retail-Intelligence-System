@@ -1,36 +1,19 @@
+from __future__ import annotations
+
 import pandas as pd
 
+from .common import finalize, nat_to_none, strip_timezone
+
+
 def transform_order_reviews(data: pd.DataFrame) -> pd.DataFrame:
-    """
-    Transform and clean the order reviews dataset.
+    data = data.copy()
+    for col in ("review_id", "order_id", "review_comment_title", "review_comment_message"):
+        data[col] = data[col].astype("string")
+    data["review_score"] = data["review_score"].astype("Int64")
 
-    Arguments:
-        data (pd.DataFrame): The raw order reviews data.
+    data["review_creation_date"] = strip_timezone(data["review_creation_date"])
+    data["review_answer_timestamp"] = strip_timezone(data["review_answer_timestamp"])
 
-    Returns:
-        pd.DataFrame: The transformed and cleaned order reviews data.
-    """
-    # Convert data types
-    data.review_id = data.review_id.astype('string')
-    data.order_id = data.order_id.astype('string')
-    data.review_score = data.review_score.astype('Int64')
-    data.review_comment_title = data.review_comment_title.astype('string')
-    data.review_comment_message = data.review_comment_message.astype('string')
-
-    # Convert dates
-    data.review_creation_date = pd.to_datetime(data.review_creation_date)
-    data.review_creation_date = data.review_creation_date.dt.tz_localize(None)
-    data.review_answer_timestamp = pd.to_datetime(data.review_answer_timestamp)
-    data.review_answer_timestamp = data.review_answer_timestamp.dt.tz_localize(None)
-
-    # Drop rows with more than 1 NaN value
-    data = data.dropna(thresh=len(data.columns) - 1)
-
-    # Drop duplicate rows
-    data = data.drop_duplicates()
-
-    # For duplicate review_ids, keep only the first occurrence per review_id
-    # This ensures we have a valid primary key (order_id) without duplicate review_ids
-    data = data.drop_duplicates(subset=['review_id'], keep='first')
-
-    return data
+    data = finalize(data)
+    # review_id is a soft key; the table PK is order_id, so one review per order.
+    return data.drop_duplicates(subset=["review_id"], keep="first")

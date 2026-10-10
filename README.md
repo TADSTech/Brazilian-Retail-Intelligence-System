@@ -1,191 +1,116 @@
 # Brazilian Retail Intelligence System (BRIS)
 
-![Status](https://img.shields.io/badge/Status-Production%20Ready-success)
-![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)
-![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED.svg)
-![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E.svg)
-![React](https://img.shields.io/badge/Frontend-React%20%7C%20Vite-61DAFB.svg)
+Data platform on the public [Olist Brazilian e-commerce dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce): an ETL pipeline, a FastAPI control plane, a synthetic order generator, and a React dashboard.
 
-**A comprehensive, end-to-end Data Engineering and Business Intelligence solution.**
+The backend is the product here. The dashboard reads the same Supabase tables the pipeline writes.
 
-This project demonstrates a full-stack approach to data systems, encompassing everything from raw data extraction and transformation to synthetic data generation, API development, and frontend visualization. It is designed to simulate a high-scale, professional retail analytics environment.
+## Architecture
 
----
-
-## System Architecture
-
-The system is built on a modular microservices architecture, separating concerns between data processing, storage, and presentation.
-
-```mermaid
-graph TD
-    subgraph "Data Sources"
-        CSV[Raw CSV Data]
-        Gen["OrderGen (ML/NLP)"]
-    end
-
-    subgraph "ETL Pipeline"
-        Extract[Extract]
-        Transform["Transform & Clean"]
-        Load["Load (Incremental)"]
-    end
-
-    subgraph "Backend Services (Docker)"
-        API[FastAPI Gateway]
-        Worker[Background Tasks]
-    end
-
-    subgraph "Storage"
-        DB[(Supabase / PostgreSQL)]
-    end
-
-    subgraph "Frontend"
-        Dash[React Dashboard]
-    end
-
-    CSV --> Extract
-    Gen --> Extract
-    Extract --> Transform
-    Transform --> Load
-    Load --> DB
-    API --> Worker
-    Worker --> Gen
-    Worker --> Load
-    Dash --> API
-    Dash --> DB
+```text
+data/*.csv ──► etl (extract → transform) ──► loaders ──► Supabase / local Postgres
+                                                      ▲
+FastAPI ──► POST /etl/run ────────────────────────────┤
+         ──► POST /orders/generate ──► ordergen ──────┘
+dashboard ──► Supabase (read) + API (control)
 ```
 
----
+| Component | Path | Role |
+|---|---|---|
+| ETL | `etl/` | CSV extract, pure transforms, FK-ordered load |
+| Loaders | `etl/loaders.py` | `SupabaseLoader` (batched REST upsert) and `PostgresLoader` (SQLAlchemy bulk insert) |
+| API | `api/` | FastAPI: health, ETL trigger, synthetic order trigger |
+| OrderGen | `ordergen/` | Samples real products/sellers/locations; Markov review text |
+| Schema | `db_schema/` | SQLAlchemy models, local DDL, FKs/indexes, migration helpers |
+| SQL | `sql/` | Analytical queries (revenue, logistics, satisfaction) |
+| Tests | `tests/` | Unit tests for transforms, extract, loader order, Markov |
 
-## Key Features
+## Quick start
 
-### 1. Dual-Environment ETL Pipeline
-*   **Local Development**: Uses `SQLAlchemy` for rapid iteration with local PostgreSQL instances.
-*   **Production**: Uses `supabase-py` for direct, secure HTTP-based data loading.
-*   **Incremental Loading**: Smart upsert logic ensures only new or modified records are processed, minimizing database load and costs.
+### 1. Environment
 
-### 2. Intelligent Data Generation (OrderGen)
-*   **Synthetic Data Engine**: A custom Python module that "learns" from existing data distributions to generate realistic new orders.
-*   **NLP-Powered Reviews**: Implements a **Markov Chain** model to generate authentic-sounding customer review comments in Portuguese based on real dataset patterns.
-*   **Backfill Capability**: Can generate historical data to fill gaps or simulate traffic spikes.
-
-### 3. Production-Ready Backend
-*   **FastAPI Service**: Exposes REST endpoints to trigger ETL jobs and data generation tasks.
-*   **Dockerized**: Fully containerized application ensuring consistency across development and deployment environments.
-*   **Asynchronous Processing**: Uses background tasks for long-running data operations to keep the API responsive.
-
-### 4. Robust Database Design
-*   **Schema Management**: Python-based schema migration and creation scripts.
-*   **Data Integrity**: Automated setup of Foreign Keys, Constraints, and Indexes to ensure data quality and query performance.
-*   **Security**: Row Level Security (RLS) ready architecture.
-
-### 5. Modern Frontend Dashboard
-*   **Tech Stack**: React, TypeScript, Vite, Tailwind CSS.
-*   **Visualization**: Interactive charts and metrics visualizing Revenue, Customer Behavior, and Logistics efficiency.
-
----
-
-## Technical Stack
-
-| Domain | Technologies |
-|--------|--------------|
-| **Data Engineering** | Python, Pandas, NumPy, SQLAlchemy |
-| **Backend API** | FastAPI, Uvicorn, Pydantic |
-| **Database** | PostgreSQL, Supabase (Cloud) |
-| **DevOps** | Docker, Bash Scripting, Git |
-| **Frontend** | React, TypeScript, Vite, Tailwind CSS |
-| **Data Science** | Scikit-learn (concepts), Markov Chains, Faker |
-
----
-
-## Project Structure
-
-```
-├── api/                 # FastAPI backend application
-├── dashboard/           # React frontend application
-├── data/                # Raw CSV datasets
-├── db_schema/           # Database schema definitions & constraints
-├── docs/                # Documentation & PDFs
-├── etl_local/           # Local ETL pipeline (SQLAlchemy)
-├── etl_prod/            # Production ETL pipeline (Supabase)
-├── ordergen/            # Synthetic data generator (ML/NLP)
-├── Dockerfile           # Container definition
-├── requirements.txt     # Python dependencies
-└── run_docker.sh        # Deployment script
+```bash
+cp .env.example .env
+# fill in SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY (or DATABASE_URL for local Postgres)
 ```
 
----
+`.env` is gitignored. Never commit it. Service-role keys bypass row-level security; treat them like passwords.
 
-## Getting Started
+### 2. Dataset
 
-### Prerequisites
-*   Docker & Docker Compose
-*   Python 3.10+
-*   Node.js 18+ (for frontend)
+Download the Olist CSVs from the [GitHub release](../../releases) and extract them into `data/`.
 
-### 📥 Dataset Setup
-**Important:** You must set up the data before running the application.
-1.  Navigate to the **[Releases](../../releases)** section of this repository.
-2.  Download the dataset archive.
-3.  Extract the CSV files into the `data/` directory in the project root.
+### 3. Backend
 
-### Option A: Run with Docker (Recommended)
+```bash
+pip install -r requirements.txt
 
-This will start the Backend API, ETL, and Order Generator in a single container.
+# Full pipeline
+python -m etl
 
-1.  **Configure Environment**:
-    Create a `.env` file with your Supabase credentials:
-    ```env
-    SUPABASE_URL=https://your-project.supabase.co
-    SUPERKEY=your-service-role-key
-    ```
+# Subset of tables
+python -m etl --tables orders order_items
 
-2.  **Build and Run**:
-    ```bash
-    ./run_docker.sh
-    ```
+# Synthetic orders
+python -m ordergen.main --count 100
 
-3.  **Interact with API**:
-    *   Health Check: `http://localhost:8000/health`
-    *   Generate Orders:
-        ```bash
-        curl -X POST http://localhost:8000/orders/generate \
-             -H "Content-Type: application/json" \
-             -d '{"count": 10}'
-        ```
+# API
+uvicorn api.main:app --reload
+# → http://localhost:8000/docs
+```
 
-### Option B: Local Development
+### 4. Docker
 
-1.  **Install Dependencies**:
-    ```bash
-    pip install -r requirements.txt
-    ```
+```bash
+./run_docker.sh
+curl http://localhost:8000/health
+curl -X POST http://localhost:8000/orders/generate \
+  -H "Content-Type: application/json" \
+  -d '{"count": 10}'
+```
 
-2.  **Run ETL Locally**:
-    ```bash
-    python -m etl_local.main
-    ```
+### 5. Tests
 
-3.  **Start Frontend**:
-    ```bash
-    cd dashboard
-    npm install
-    npm run dev
-    ```
+```bash
+pip install -r requirements-dev.txt
+python -m pytest tests -q
+```
 
----
+## Local Postgres path
 
-## 📚 Documentation
+Set `ETL_BACKEND=postgres` and `DATABASE_URL`, then:
 
-Detailed documentation is available in the `docs/` folder:
-*   [System Overview](docs/system_overview.pdf)
-*   [Database Setup](docs/database_setup.pdf)
-*   [ETL Pipeline Setup](docs/etl_setup.pdf)
+```bash
+python -m db_schema.create_schema
+python -m db_schema.setup_constraints
+python -m etl --full-reload
+```
 
----
+## API
+
+| Method | Path | Body | Notes |
+|---|---|---|---|
+| GET | `/health` | — | `{status, generator_ready}` |
+| POST | `/etl/run` | `{full_reload?, tables?}` | Runs the pipeline in a background task |
+| POST | `/orders/generate` | `{count}` | 503 if the generator failed to train |
+
+Interactive docs at `/docs`.
+
+## Design notes
+
+- **One ETL package.** Load target is configuration (`ETL_BACKEND`), not a fork of the codebase.
+- **FK-safe load order** is declared once (`etl/config.py::TABLE_ORDER`): geolocation → customers → sellers → products → orders → order_items → order_payments → order_reviews.
+- **Transforms are pure.** Each takes a DataFrame and returns a cleaned DataFrame. Shared rules (state mapping, timezone stripping, dedupe) live in `etl/transform/common.py`.
+- **Idempotent loads.** The Supabase path upserts on primary keys, so re-runs do not duplicate rows.
+- **Generator stays referentially consistent.** Synthetic orders sample product, seller, and location IDs from the database so foreign keys resolve.
+
+## Documentation
+
+- [Architecture](docs/ARCHITECTURE.md)
+- [API reference](docs/API_ENDPOINTS.md)
+- [Database schema](docs/DATABASE_SCHEMA.md)
+- [ETL setup](docs/etl_setup.md)
+- [Dataset setup](docs/dataset_setup.md)
 
 ## Author
 
-**TADSTech**<br>
-*Full Stack Data Engineer & Software Developer*
-
-Built during Ungodly hours and using Python and Coffee.
+**TADSTech** — full-stack data engineering.
